@@ -66,10 +66,27 @@ and a 440 Hz tone are recoverable end-to-end. WAV artifacts (gitignored): `.work
 
 - **Decision per spec rule:** **external audio capture (physical path only)**. No automated USB
   fixture is possible; any P4 audio test must capture the pedal's analog OUTPUT through an
-  external USB audio interface (the TI dongle input or FB200 are present; the capture chain was
-  validated by the tone controls above). Manual listening test is the fallback if the analog
-  capture cannot be wired. This requires operator action: wire pedal OUTPUT -> capture interface
-  input, then confirm audibility/latency (not wired or verified in this session).
+  external USB audio interface (the TI dongle input or FB200 are present). Manual listening
+  test is the fallback if the analog capture cannot be wired.
+
+Validation scope: only digital loopback (TI dongle), gadget loopback (FB200), and
+acoustic speaker-to-built-in-mic paths were exercised. The analog pedal-output
+capture chain has NOT been wired or verified. The RMS values above are
+noise-floor/control measurements, not usable thresholds for a bypass-vs-effect
+differential.
+
+Spec mapping: with no USB audio at all (not even USB playback loopback), this is
+the spec's `else` branch; external capture is chosen because it still produces
+recorded evidence, with manual listening as the fallback.
+
+Operator brief for P4 audio tests:
+- Cable: pedal OUTPUT (1/4") -> 3.5 mm line-in of a capture interface (TI dongle
+  `08bb:29c0` or FB200 `cafe:4002`); the probe records mono channel 0 only.
+- Set interface input gain so a played tone peaks well above the control noise
+  floor (controls measured RMS 0.0001-0.0068, max -29.4 dB).
+- Record a new reference level with the pedal in the chain (bypass vs effect)
+  once wired; that differential becomes the P4 fixture tolerance.
+
 - **Effect bypass-vs-on differential:** not measurable over USB (N/A). With external capture it
   needs operator action — a signal source at the pedal INPUT (tone into AUX IN bypasses the
   effects per the manual) and a footswitch/patch toggle for the effect. Not performed here.

@@ -7,6 +7,7 @@ audio fixture is possible (spec E4 decision rule).
 
 import argparse
 import math
+import sys
 import wave
 from pathlib import Path
 
@@ -76,7 +77,14 @@ def main(argv=None) -> int:
     if args.out_index is None or args.in_index is None:
         parser.error("--out-index and --in-index are required unless --list is used")
 
-    result = play_and_record(args.out_index, args.in_index, args.rate, args.seconds, args.wav)
+    try:
+        result = play_and_record(args.out_index, args.in_index, args.rate, args.seconds, args.wav)
+    except Exception as error:
+        print(
+            f"error: {error} (check --list for valid device indices; a busy device also fails)",
+            file=sys.stderr,
+        )
+        return 1
     print(f"played_rms={result['played_rms']:.4f} recorded_rms={result['recorded_rms']:.4f} wav={args.wav}")
     return 0
 
