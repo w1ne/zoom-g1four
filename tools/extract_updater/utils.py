@@ -19,10 +19,15 @@ def sha256_file(path: Path) -> str:
 def download(url: str, dest: Path, expected_sha256: str) -> Path:
     dest = Path(dest)
     dest.parent.mkdir(parents=True, exist_ok=True)
-    with tempfile.NamedTemporaryFile(dir=dest.parent, delete=False) as tmp:
-        with urllib.request.urlopen(url) as response:
-            shutil.copyfileobj(response, tmp)
-        tmp_path = Path(tmp.name)
+    tmp = tempfile.NamedTemporaryFile(dir=dest.parent, delete=False)
+    tmp_path = Path(tmp.name)
+    try:
+        with tmp:
+            with urllib.request.urlopen(url, timeout=30) as response:
+                shutil.copyfileobj(response, tmp)
+    except BaseException:
+        tmp_path.unlink(missing_ok=True)
+        raise
     actual = sha256_file(tmp_path)
     if actual != expected_sha256:
         tmp_path.unlink(missing_ok=True)
