@@ -99,12 +99,14 @@ Hardware tools only read unless a phase explicitly says write.
 ## Phases and gates
 
 **P0 — Extract (software, no device).**
-Fetch official v2.00 packages, verify hash, implement the container parser
-(reference: Zoom-Firmware-Editor documentation), emit `ROM.bin`, `Main.bin`,
-`FS.bin`, `Preset.bin`, `MAIN_INFO.bin` + `SHA256SUMS`. Windows vs Mac payloads
-must match; mismatch = abort, write diff report, investigate before proceeding.
-Parser round-trip (extract -> repack) must be byte-identical. `FS.bin` file list
-becomes the completeness oracle for the P1 backup. Deliverable: **M0**.
+Fetch official v2.00 packages, verify hash, extract all five bins from both
+platforms and confirm they are byte-identical (recon 2026-09-27: the Mac app
+ships them as plain resources; the Windows EXE stores the same payloads as PE
+resources, extractable with 7zz). Emit `ROM.bin`, `Main.bin`, `FS.bin`,
+`Preset.bin`, `MAIN_INFO.bin` + `SHA256SUMS`. Any mismatch = abort, write a
+diff report, investigate before proceeding. The extract/repack container
+round-trip (E5) is required before P5a, not for M0. `FS.bin` file list becomes
+the completeness oracle for the P1 backup. Deliverable: **M0**.
 
 **P1 — Backup (read-only, no device writes).**
 `zoomctl backup`: identity + firmware version; all user patches; full FS listing
