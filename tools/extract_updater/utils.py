@@ -7,6 +7,7 @@ import urllib.request
 import zipfile
 from pathlib import Path
 
+# zoomcorp.com WAF returns HTTP 403 for urllib's default User-Agent.
 DEFAULT_USER_AGENT = (
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
     "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36"

@@ -123,6 +123,8 @@ def test_download_sets_browser_user_agent(tmp_path, monkeypatch):
     dest = tmp_path / "payload.bin"
     download("https://example.invalid/payload.bin", dest, hashlib.sha256(b"payload").hexdigest())
 
+    assert "Mozilla/5.0" in DEFAULT_USER_AGENT
     assert captured["request"].get_header("User-agent") == DEFAULT_USER_AGENT
+    assert captured["request"].full_url == "https://example.invalid/payload.bin"
     assert captured["timeout"] == 30
     assert dest.read_bytes() == b"payload"
