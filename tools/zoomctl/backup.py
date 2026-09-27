@@ -9,7 +9,6 @@ from pathlib import Path
 from . import manifest as manifest_module
 from .oracle import compare_names, extract_names_from_path
 from .pedal import PedalError
-from .transport import TransportError
 
 
 @dataclass
@@ -95,7 +94,7 @@ def run_backup(pedal, out_dir: Path, manifests_dir: Path, oracle_path: Path | No
     finally:
         try:
             pedal.pcmode_off()
-        except (PedalError, TransportError):
+        except Exception:
             if backup_error is None:
                 raise
 
