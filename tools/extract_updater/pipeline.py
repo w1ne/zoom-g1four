@@ -26,15 +26,19 @@ def canonicalize(
 ) -> dict[str, Path]:
     if set(mac) != set(win):
         raise ValueError(f"payload set mismatch: mac={sorted(mac)} win={sorted(win)}")
+    mismatches = []
     for name in sorted(mac):
         mac_hash = sha256_file(mac[name])
         win_hash = sha256_file(win[name])
         if mac_hash != win_hash:
-            message = f"platform mismatch for {name}: mac={mac_hash} win={win_hash}"
-            if report_path is not None:
-                report_path.write_text(message + "\n")
-            raise ValueError(message)
-    return mac
+            mismatches.append(
+                f"platform mismatch for {name}: mac={mac_hash} win={win_hash}"
+            )
+    if mismatches:
+        if report_path is not None:
+            report_path.write_text("\n".join(mismatches) + "\n")
+        raise ValueError("; ".join(mismatches))
+    return dict(mac)
 
 
 def write_sha256sums(bins: dict[str, Path], out_path: Path) -> Path:
@@ -56,6 +60,9 @@ def extract_all(official_dir: Path, out_dir: Path, work_dir: Path) -> dict[str, 
     mac_bins = find_mac_resources(mac_root)
     win_bins = extract_win_resources(exes[0], work_dir / "win-resources")
     bins = canonicalize(mac_bins, win_bins, report_path=work_dir / "mismatch-report.txt")
+    missing = sorted(set(constants.PAYLOADS) - set(bins))
+    if missing:
+        raise ValueError(f"extracted payload set incomplete: {missing}")
 
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -63,6 +70,7 @@ def extract_all(official_dir: Path, out_dir: Path, work_dir: Path) -> dict[str, 
     for name, src in bins.items():
         shutil.copyfile(src, final[name])
     write_sha256sums(final, out_dir / "SHA256SUMS")
+    verify_all(out_dir)
     return final
 
 
