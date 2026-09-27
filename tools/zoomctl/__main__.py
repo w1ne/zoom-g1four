@@ -38,31 +38,33 @@ def main(argv=None) -> int:
         return 0
 
     if args.command == "identity":
-        pedal = _open_pedal()
         try:
-            identity = pedal.identity()
+            pedal = _open_pedal()
+            try:
+                identity = pedal.identity()
+            finally:
+                pedal.transport.close()
         except (PedalError, TransportError) as error:
             sys.exit(f"error: {error}")
-        finally:
-            pedal.transport.close()
         for key in ("model", "model_bytes", "firmware", "reply_hex"):
             print(f"{key}: {identity[key]}")
         return 0
 
     if args.command == "backup":
-        pedal = _open_pedal()
         oracle = Path(args.fs_oracle) if args.fs_oracle else repo / "firmware" / "extracted" / "FS.bin"
         try:
-            result = run_backup(
-                pedal,
-                out_dir=Path(args.out) if args.out else repo / "backups",
-                manifests_dir=Path(args.manifests) if args.manifests else repo / "backups" / "manifests",
-                oracle_path=oracle,
-            )
+            pedal = _open_pedal()
+            try:
+                result = run_backup(
+                    pedal,
+                    out_dir=Path(args.out) if args.out else repo / "backups",
+                    manifests_dir=Path(args.manifests) if args.manifests else repo / "backups" / "manifests",
+                    oracle_path=oracle,
+                )
+            finally:
+                pedal.transport.close()
         except (PedalError, TransportError) as error:
             sys.exit(f"error: {error}")
-        finally:
-            pedal.transport.close()
         m = result.manifest
         print(f"identity: {m['identity']['model']} firmware {m['identity']['firmware']}")
         print(f"patches: {len(m['patches'])}")

@@ -8,6 +8,7 @@ from pathlib import Path
 
 from . import manifest as manifest_module
 from .oracle import compare_names, extract_names_from_path
+from .pedal import PedalError
 
 
 @dataclass
@@ -19,6 +20,11 @@ class BackupResult:
 
 def _sha256(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
+
+
+def _validate_name(name: str) -> None:
+    if not name or name in (".", "..") or "/" in name or "\\" in name or Path(name).name != name:
+        raise PedalError(f"unsafe file name from device: {name!r}")
 
 
 def run_backup(pedal, out_dir: Path, manifests_dir: Path, oracle_path: Path | None = None) -> BackupResult:
@@ -58,6 +64,9 @@ def run_backup(pedal, out_dir: Path, manifests_dir: Path, oracle_path: Path | No
             names.append(name)
             name = pedal.file_wild(first=False)
         listing_seconds = time.perf_counter() - listing_start
+
+        for name in names:
+            _validate_name(name)
 
         fs_total_start = time.perf_counter()
         files = []

@@ -1,5 +1,7 @@
 import json
 
+import pytest
+
 from tools.zoomctl.backup import run_backup
 from tools.zoomctl.codec import crc32_5, pack_7bit
 from tools.zoomctl.tests.fake_transport import FakeTransport, sysex
@@ -96,3 +98,21 @@ def test_run_backup_reports_oracle_differences(tmp_path):
     assert result.manifest["oracle"]["source"] == str(oracle)
     assert result.manifest["oracle"]["device_only"] == ["B.ZD2"]
     assert result.manifest["oracle"]["oracle_only"] == ["C.ZD2"]
+
+
+def test_run_backup_rejects_unsafe_device_names(tmp_path):
+    from tools.zoomctl.pedal import PedalError, ZoomPedal
+
+    ack = [0x52, 0x00, 0x6E, 0x60, 0x05]
+    responses = [
+        _identity_reply(),
+        sysex([0x52, 0x00, 0x6E, 0x52]),                      # pcmode on
+        sysex([0x52, 0x00, 0x6E, 0x44, 0, 0, 0x20, 0, 0, 0, 10, 0]),  # 0 patches
+        _file_list_reply("../evil.ZD2"),
+        sysex(ack),                                            # end of list
+        sysex([0x52, 0x00, 0x6E, 0x53]),                      # pcmode off
+    ]
+    pedal = ZoomPedal(FakeTransport(responses))
+
+    with pytest.raises(PedalError, match="unsafe file name"):
+        run_backup(pedal, out_dir=tmp_path / "backups", manifests_dir=tmp_path / "manifests")
