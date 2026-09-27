@@ -6,6 +6,7 @@
 
 firmware/official/*
 firmware/extracted/*
+!firmware/extracted/SHA256SUMS
 firmware/repacked/*
 flash/*
 backups/*

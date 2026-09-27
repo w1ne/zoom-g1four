@@ -25,7 +25,7 @@ Read `docs/superpowers/specs/2026-09-27-zoom-g1four-design.md` for the design an
 
 | Phase | Goal | Milestone | Status |
 |---|---|---|---|
-| P0 | Extract official v2.00 updater into canonical bins | M0 | not started |
+| P0 | Extract official v2.00 updater into canonical bins | M0 | done (M0) |
 | P1 | Read-only patch/FS backup (required before any write) | M1 | not started |
 | P2 | Capture USB sessions, decide open questions (E1-alt/E1–E6) | M2 | not started |
 | P3 | 4 MB flash dump, memory map, restore verified to the level recorded in recovery.md (opens write gate) | M3 | not started |
