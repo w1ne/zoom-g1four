@@ -1,5 +1,4 @@
 import mido
-import pytest
 
 from tools.capture import midi_log
 
@@ -14,9 +13,23 @@ def test_format_message_without_data():
     assert midi_log.format_message(message, 0.0) == "    0.000 clock       "
 
 
+def test_format_message_note_on_logs_data_bytes():
+    message = mido.Message("note_on", note=60, velocity=100)
+    assert midi_log.format_message(message, 0.0) == "    0.000 note_on      3C 64"
+
+
 def test_record_returns_2_when_no_port(monkeypatch, tmp_path):
     monkeypatch.setattr(mido, "get_input_names", lambda: ["Other Device"])
     assert midi_log.record("ZOOM G", tmp_path / "log.txt", duration=0.0) == 2
+
+
+def test_record_refuses_to_overwrite(monkeypatch, tmp_path):
+    out = tmp_path / "log.txt"
+    out.write_text("existing")
+    monkeypatch.setattr(mido, "get_input_names", lambda: ["ZOOM G Series"])
+
+    assert midi_log.record("ZOOM G", out, duration=0.0) == 3
+    assert out.read_text() == "existing"
 
 
 def test_record_logs_messages(monkeypatch, tmp_path):
@@ -30,6 +43,8 @@ def test_record_logs_messages(monkeypatch, tmp_path):
         def close(self):
             pass
 
+    ticks = iter([0.0, 0.1, 0.2, 0.3, 0.4, 10.0, 10.1, 10.2])
+    monkeypatch.setattr(midi_log.time, "monotonic", lambda: next(ticks, 100.0))
     monkeypatch.setattr(mido, "get_input_names", lambda: ["ZOOM G Series"])
     monkeypatch.setattr(mido, "open_input", lambda name: FakePort())
 
@@ -38,5 +53,6 @@ def test_record_logs_messages(monkeypatch, tmp_path):
 
     lines = out.read_text().splitlines()
     assert lines[0] == "# port: ZOOM G Series"
-    assert "sysex" in lines[1] and "52 00 6E 44" in lines[1]
-    assert "clock" in lines[2]
+    assert lines[1].startswith("# started: ")
+    assert "sysex" in lines[2] and "52 00 6E 44" in lines[2]
+    assert "clock" in lines[3]
