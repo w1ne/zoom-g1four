@@ -52,8 +52,10 @@ Hashes are committed (`firmware/extracted/SHA256SUMS`); the packages and payload
 
 ## Back up the pedal (P1, read-only)
 
-Requires the pedal connected via USB and `mido` installed
-(`.venv/bin/python -m pip install "mido[ports-rtmidi]"`).
+Requires the pedal connected via USB and the runtime dependency from
+`pyproject.toml` installed once:
+`.venv/bin/python -m pip install "mido[ports-rtmidi]"`.
+Protocol reference: `docs/research/2026-09-27-p1-protocol.md`.
 
 ```bash
 .venv/bin/python -m tools.zoomctl ports      # confirm the ZOOM G Series ports
