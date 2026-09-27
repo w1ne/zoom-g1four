@@ -94,3 +94,35 @@ def test_download_failure_leaves_no_residue(tmp_path):
         download((tmp_path / "missing.bin").as_uri(), dest_dir / "x.bin", "0" * 64)
 
     assert list(dest_dir.iterdir()) == []
+
+
+def test_download_sets_browser_user_agent(tmp_path, monkeypatch):
+    import hashlib
+    import io
+    import urllib.request
+
+    from tools.extract_updater.utils import DEFAULT_USER_AGENT
+
+    captured = {}
+
+    def fake_urlopen(request, timeout):
+        captured["request"] = request
+        captured["timeout"] = timeout
+
+        class FakeResponse(io.BytesIO):
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *args):
+                return False
+
+        return FakeResponse(b"payload")
+
+    monkeypatch.setattr(urllib.request, "urlopen", fake_urlopen)
+
+    dest = tmp_path / "payload.bin"
+    download("https://example.invalid/payload.bin", dest, hashlib.sha256(b"payload").hexdigest())
+
+    assert captured["request"].get_header("User-agent") == DEFAULT_USER_AGENT
+    assert captured["timeout"] == 30
+    assert dest.read_bytes() == b"payload"
