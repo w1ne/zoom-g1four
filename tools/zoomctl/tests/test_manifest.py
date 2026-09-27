@@ -1,5 +1,7 @@
 import json
 
+import pytest
+
 from tools.zoomctl.manifest import canonical_json, state_digest, write_manifest
 
 
@@ -36,3 +38,25 @@ def test_write_manifest_uses_digest_filename(tmp_path):
     path = write_manifest(manifest, tmp_path)
     assert path == tmp_path / f"{manifest['state_digest']}.json"
     assert json.loads(path.read_text())["schema_version"] == 1
+
+
+def test_state_digest_ignores_timings_oracle_and_created():
+    baseline = state_digest(_sample_manifest())
+    changed = _sample_manifest()
+    changed["created_utc"] = "2030-01-01T00:00:00Z"
+    changed["oracle"] = {"source": "FS.bin", "device_only": ["X"], "oracle_only": []}
+    changed["timings"] = {
+        "patch_total_seconds": 99,
+        "fs_total_seconds": 99,
+        "total_seconds": 99,
+    }
+
+    assert state_digest(changed) == baseline
+
+
+def test_write_manifest_rejects_wrong_digest(tmp_path):
+    manifest = _sample_manifest()
+    manifest["state_digest"] = "deadbeef"
+
+    with pytest.raises(ValueError, match="state digest mismatch"):
+        write_manifest(manifest, tmp_path)
