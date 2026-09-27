@@ -7,7 +7,7 @@
 | E3 | pending | |
 | E4 | done | no pedal USB audio (MIDI-only); external capture required; see below |
 | E5 | done | container regeneration verified; see below |
-| E6 | pending | |
+| E6 | done | auto-detectable via identity firmware string (see below) |
 
 ## E2 — flasher host
 
@@ -165,3 +165,27 @@ running a repacked updater. Options if it blocks: recompute the checksum with
 `pefile.generate_checksum()` or run the flash from a Windows host/VM with
 SmartScreen bypass. Mac side: repack uses ad-hoc signing plus
 `codesign --verify --strict`.
+
+## E6 — update-mode descriptors (2026-09-27, operator-assisted)
+
+Normal mode (baseline, `.work/p2/e6/normal.txt`):
+- USB `1686:04a1`, product `ZOOM G Series`, `bcdDevice 0x0100`, one config,
+  interface 0 = class 1/1 (AudioControl, 0 endpoints), interface 1 = class 1/3
+  (MIDIStreaming, 2 endpoints). MIDI ports `ZOOM G Series` in/out.
+- Identity: `7E 00 06 02 52 6E 00 0C 00 32 2E 30 30` -> G1 Four, firmware 2.00.
+
+Update mode (both footswitches held while plugging USB; `.work/p2/e6/update.txt`):
+- USB descriptors and MIDI ports are IDENTICAL to normal mode (same PID, product
+  string, `bcdDevice`, interface layout, 2 endpoints). The device does not
+  re-enumerate differently.
+- Identity still responds, but reports firmware **1.00** (boot ROM):
+  `7E 00 06 02 52 6E 00 0C 00 31 2E 30 30`.
+
+Decision: mode is auto-detectable via the identity firmware string — the value
+reports whichever firmware is running (application version vs boot ROM). A
+future `zoomctl mode` must compare against the expected application version
+(e.g. from the latest verified manifest or `MAIN_INFO.bin`), not a hardcoded
+"1.00". Implementation deferred to P3/P4a; recorded here as the expectation.
+
+Note: `system_profiler SPUSBDataType` does not list USB devices in this
+environment; `ioreg -p IOUSB -l` was used for descriptors.
