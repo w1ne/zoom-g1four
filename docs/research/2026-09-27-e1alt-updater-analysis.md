@@ -3,32 +3,70 @@
 Goal: answer the "does the updater transfer FS.bin?" question without touching
 the device, by scanning the official Mac and Windows updater binaries for ZD2
 protocol signatures and payload names. Scanner: `tools/capture/analyze_updater.py`.
-Confidence tags follow `2026-09-27-prior-art.md`.
 
-## Command and inputs
+**Revision (review fix).** The first version counted raw byte occurrences and
+reported hits that came almost entirely from embedded payload resources. The
+scanner now subtracts payload blobs (`--exclude`) so counts reflect the updater
+code/data region, and the findings below use the corrected code-only counts.
+The earlier claims that `60 05`, `60 20 02` and `60 23` counts were above chance
+or evidence of a write path are withdrawn — those hits were payload content.
+
+## Method and inputs
+
+- Mac: `Contents/MacOS/EFX Updater`, Mach-O 64-bit x86_64, 320,224 bytes.
+- Windows: `ZOOM G1 FOUR System v2.00 Updater.exe`, PE32 x86, 4,193,320 bytes.
+- Payloads (sha256-verified from P0): `firmware/extracted/ROM.bin`,
+  `Main.bin`, `FS.bin`, `MAIN_INFO.bin`, `Preset.bin` (3,843,940 bytes total).
+- Exclusion: for every signature and string,
+  `binary_count - sum(payload_count)`. This is exact when a payload is embedded
+  verbatim; for the Windows EXE each payload was located as one contiguous blob
+  in the image (whole-resource `bytes.find`), so every embedded occurrence is
+  removed exactly once. The Mac binary does not embed payload bytes (payloads
+  ship as separate files under `Contents/Resources/`), so it is scanned without
+  exclusions; `--exclude` is only meaningful for the EXE. Applying the same
+  exclusions to the Mac binary drives counts negative, which is itself
+  confirmation that its payloads are not embedded.
+- Windows code+data outside the five payload resources is ~0.35 MB
+  (4,193,320 − 3,843,940 = 349,380 bytes).
+
+Reproduce:
 
 ```bash
 MAC_APP=$(find .work/p0/mac -name "EFX Updater" | head -1)
 WIN_EXE=$(find .work/p0/win -name "*.exe" | head -1)
-.venv/bin/python -m tools.capture.analyze_updater "$MAC_APP" "$WIN_EXE" --json > .work/p2/e1alt-report.json
-.venv/bin/python -m tools.capture.analyze_updater "$MAC_APP" "$WIN_EXE"
+
+# Windows: subtract embedded payload bytes
+.venv/bin/python -m tools.capture.analyze_updater "$WIN_EXE" \
+  --exclude firmware/extracted/ROM.bin --exclude firmware/extracted/Main.bin \
+  --exclude firmware/extracted/FS.bin --exclude firmware/extracted/MAIN_INFO.bin \
+  --exclude firmware/extracted/Preset.bin
+
+# Mac: no embedded payloads, so no exclusions
+.venv/bin/python -m tools.capture.analyze_updater "$MAC_APP"
+
+# Regression test on freshly extracted binaries (downloads packages):
+.venv/bin/python -m pytest tools/capture/tests/test_integration.py -m integration -v
 ```
 
-- Mac: `Contents/MacOS/EFX Updater`, Mach-O 64-bit x86_64, 320,224 bytes.
-- Windows: `ZOOM G1 FOUR System v2.00 Updater.exe`, PE32 x86, 4,193,320 bytes.
+## Verbatim code-only output
 
-## Verbatim scan output
+Windows EXE, with payload exclusions:
 
 ```
-== .work/p0/mac/G1 FOUR_v2.00_Mac_E/ZOOM G1 FOUR System v2.00 Updater.app/Contents/MacOS/EFX Updater (320224 bytes)
+== .work/p0/win/G1 FOUR_v2.00_Win_E/ZOOM G1 FOUR System v2.00 Updater.exe (4193320 bytes)
   enter_update_mode_01         0
-  file_ack_60_05               0
+  file_ack_60_05               1
+  file_api_60_09               1
+  file_api_60_27               0
   file_close_60_21             0
-  file_delete_60_24            2
+  file_delete_60_24            3
   file_list_60_25              2
   file_list_next_60_26         0
+  file_open_other_60_20_00     0
+  file_open_other_60_20_03     0
   file_open_read_60_20_02      0
   file_open_write_60_20_01     0
+  file_read_block_60_22        0
   file_upload_block_60_23      0
   patch_download_opcode_46     0
   patch_upload_opcode_45       0
@@ -43,25 +81,35 @@ WIN_EXE=$(find .work/p0/win -name "*.exe" | head -1)
   str Main.bin                 0
   str Preset.bin               0
   str ROM.bin                  0
-== .work/p0/win/G1 FOUR_v2.00_Win_E/ZOOM G1 FOUR System v2.00 Updater.exe (4193320 bytes)
+```
+
+Mac binary (already code-only; no exclusions):
+
+```
+== .work/p0/mac/G1 FOUR_v2.00_Mac_E/ZOOM G1 FOUR System v2.00 Updater.app/Contents/MacOS/EFX Updater (320224 bytes)
   enter_update_mode_01         0
-  file_ack_60_05               296
-  file_close_60_21             50
-  file_delete_60_24            20
-  file_list_60_25              7
-  file_list_next_60_26         25
-  file_open_read_60_20_02      7
+  file_ack_60_05               0
+  file_api_60_09               0
+  file_api_60_27               0
+  file_close_60_21             0
+  file_delete_60_24            2
+  file_list_60_25              2
+  file_list_next_60_26         0
+  file_open_other_60_20_00     0
+  file_open_other_60_20_03     0
+  file_open_read_60_20_02      0
   file_open_write_60_20_01     0
-  file_upload_block_60_23      23
+  file_read_block_60_22        1
+  file_upload_block_60_23      0
   patch_download_opcode_46     0
   patch_upload_opcode_45       0
   pcmode_off_53                0
   pcmode_on_52                 0
-  str FLST_SEQ.ZT2             5
+  str FLST_SEQ.ZT2             0
   str FS.bin                   0
-  str G1 IV                    2
-  str G1X IV                   1
-  str GUARDZDL.ZT2             5
+  str G1 IV                    0
+  str G1X IV                   0
+  str GUARDZDL.ZT2             0
   str MAIN_INFO.bin            0
   str Main.bin                 0
   str Preset.bin               0
@@ -70,91 +118,88 @@ WIN_EXE=$(find .work/p0/win -name "*.exe" | head -1)
 
 ## Interpretation
 
-**Full packets are not stored as literals.** All four-byte `52 00 6e xx`
-signatures are zero in both binaries, and the bare `52 00 6e` address prefix
-occurs once in the 4.19 MB EXE and zero times in the Mac binary. The binaries
-assemble SysEx packets at runtime; only fragments appear in the image.
-Consequently absence of a fragment is weak evidence of absence of the code
-path that would emit it.
+### The raw hits were payload content
 
-**Short-fragment counts must be read against chance.** In uniform random data a
-specific two-byte sequence is expected ~64 times in the 4.19 MB EXE and ~5
-times in the 320 KB Mac binary; a specific three-byte sequence ~0.25 and ~0.02
-times. Much of the EXE is embedded payload data, which further skews baselines.
-Of the two-byte signatures, only `file_ack_60_05` (296) stands clearly above
-chance; `file_upload_block_60_23` (23), `file_delete_60_24` (20),
-`file_close_60_21` (50), `file_list_60_25` (2) and `file_list_next_60_26` (25)
-are near or below the expected chance rate and cannot establish calls on their
-own. `file_open_read_60_20_02` (7) is a three-byte fragment and is far above
-the ~0.25 chance rate.
+Subtracting the five payload blobs removes essentially every hit the first
+version reported:
 
-**Payload-name strings are absent by design.** No payload filename string is
-present in the EXE, not even `.bin`. Payloads are referenced by numeric PE
-resource IDs, not names, so name-string absence carries no signal on Windows.
-The ZT2 strings that were found are payload *content*, not code references:
-`GUARDZDL.ZT2`/`FLST_SEQ.ZT2` each occur 4 times inside the embedded FS.bin
-resource (resource 136) and 5 times in the EXE overall; `G1 IV` occurs inside
-the embedded Main.bin resource (129).
+| Fragment | Raw count | Code-only |
+|---|---|---|
+| `60 23` (upload block) | 23 | 0 |
+| `60 22` (read block) | 73 | 0 |
+| `60 05` (ack) | 296 | 1 |
+| `60 20 00` (open other) | 17 | 0 |
+| `60 20 02` (open read) | 7 | 0 |
+| `60 20 03` (open other) | 4 | 0 |
+| `60 09` (close follow-up) | 66 | 1 |
+| `GUARDZDL.ZT2` / `FLST_SEQ.ZT2` | 5 / 5 | 0 / 0 |
+| `G1 IV` / `G1X IV` | 2 / 1 | 0 / 0 |
 
-**File-open modes (Windows EXE).** Read-open `60 20 02` present (7). Write-open
-`60 20 01` absent (0). Neighbouring mode fragments `60 20 00` (17) and
-`60 20 03` (4) are present well above chance; their meaning is unknown, but the
-open-mode byte is evidently not a single hard-coded literal.
+The ZT2 strings occurred inside the embedded FS.bin resource and `G1 IV` inside
+the embedded Main.bin resource; those resources are referenced by numeric PE
+resource ID (129/133/136/139/142), so no payload filename literal exists in the
+EXE at all. The raw counts that looked like protocol evidence were the payload
+data itself.
 
-**Block transfer (Windows EXE).** Block-write fragment `60 23` present (23,
-near chance); read-ack `60 05` (296) and close `60 21` (50) present; delete
-`60 24` (20) and list/list-next `60 25`/`60 26` present at counts near chance.
+### All non-payload counts are at or below chance
 
-**Mac binary is a different code shape.** Aside from `60 24` (2) and `60 25`
-(2), every signature and string is zero, yet the same payloads ship as named
-files in `Contents/Resources/`. The binary is Objective-C and exposes an FFS
-file API with runtime arguments: `allocateFFSOpen:openFlag:`,
-`allocateFFSWrite:dataBody:`, `allocateFFSUnlink:`, `allocateFFSFormat`,
-`allocateFFSFileListFlush`, `allocateFFSModeStart:`, `allocateFFSModeEnd:`,
-`allocateFFSAck:`, and matching `sendSysexFFS...` selectors. It composes
-payload filenames at runtime from the base names `Main`, `MAIN_INFO`, `FS`,
-`Preset`, `ROM` and the format string `%@.bin`. Literal scanning therefore
-under-reports the Mac updater structurally; its zeros are not evidence that
-operations are absent.
+In ~0.35 MB of code+data outside the resources, a specific two-byte fragment is
+expected ~5.3 times by chance and a specific three-byte fragment ~0.02 times
+(the ~0.25 per three-byte figure applies only if the full 4.19 MB image,
+including embedded payloads, is treated as uniform data).
+
+- Windows code-only nonzeros: `60 05` (1), `60 09` (1), `60 24` (3),
+  `60 25` (2) — four two-byte fragments, all at or below the ~5.3 baseline.
+  Every three-byte fragment is 0. Every payload-name string is 0.
+- Mac code-only nonzeros: `60 24` (2), `60 25` (2), `60 22` (1) — all at or
+  below the ~4.9 two-byte baseline for a 320 KB binary; every three-byte
+  fragment is 0.
+
+So the byte signatures in the code regions provide **no positive evidence
+either way**: not for a write path, not for a read path, and not for payload
+selection. In particular, the write-open fragment `60 20 01` is 0 in both
+code regions, and the read-open fragment `60 20 02` is 0 as well.
+
+### Non-signature evidence (unchanged; this is the strong part)
+
+- The Windows EXE embeds all five payloads verbatim as PE resources 129
+  (Main.bin), 133 (Preset.bin), 136 (FS.bin), 139 (MAIN_INFO.bin), 142
+  (ROM.bin), each located as one contiguous blob at offsets `0x4aa28`,
+  `0xc318c`, `0xce18c`, `0x3cc18c`, `0x3cd18c` and byte-identical to
+  `firmware/extracted/` (sha256 verified).
+- The Mac binary contains the payload table
+  `Main\0MAIN_INFO\0FS\0Preset\0ROM\0` followed by five 32-hex-digit MD5s that
+  match the five shipped payloads byte-for-byte, including
+  `edc06e42361b249ed193cc61eb529453` = MD5(`FS.bin`), plus the runtime format
+  string `%@.bin dosen't exist.` — `FS` is explicitly in the payload set.
+- The Mac binary exposes an Objective-C FFS write API:
+  `allocateFFSOpen:openFlag:`, `allocateFFSWrite:dataBody:`,
+  `allocateFFSUnlink:`, `sendSysexFFSWrite:dataBody:receiveBlock:failedBlock:completion:error:`,
+  `allocateFFSModeStart:` / `allocateFFSModeEnd:`. Open mode is a runtime
+  `openFlag:` argument, so the scanner cannot see it as a byte literal.
 
 ## FS.bin conclusion
 
 **Inconclusive (E1 required).**
 
-Evidence that the write path and FS.bin payload exist — all outside the
-signature counts:
+- For transfer: FS.bin ships in both official packages; the Mac updater lists
+  `FS` in its payload table with the matching MD5; an FFS write API exists; the
+  five PE resources are byte-identical to the extracted bins.
+- Against a firm "IS transferred" claim: no opcode is evidenced in code. All
+  code-region opcode counts are at or below chance, the write-open fragment
+  `60 20 01` is absent (0/0), and on Mac the open mode is a runtime argument.
+  Whether the shipped `FS.bin` is actually streamed on a stock G1 Four, skipped
+  by a runtime condition, or only sent for certain models/versions cannot be
+  decided from byte signatures; public reports state that official update mode
+  does not restore the filesystem on G1 Four.
 
-- Both official packages ship `FS.bin` (3,137,536 B) [V]: as a named resource
-  (`Contents/Resources/FS.bin`) on Mac, and embedded verbatim in the EXE as PE
-  resource 136 (sha256 `7dd2821c...`, matching the P0 mapping) [V].
-- The Mac binary contains the payload table
-  `Main\0MAIN_INFO\0FS\0Preset\0ROM\0` followed by five 32-hex-digit MD5s that
-  match the five shipped payloads byte-for-byte, including
-  `edc06e42361b249ed193cc61eb529453` = MD5(`FS.bin`) [V]. `FS` is explicitly in
-  the updater's payload set, and `allocateFFSWrite:dataBody:` /
-  `sendSysexFFSWrite:` show a write API exists [V].
-- The Windows EXE contains the block-write fragment `60 23` (23) and the
-  reference protocol's write path is open-write (`60 20 01`) + block-write
-  (`60 23`) [S from prior art].
+## E3 / P3 note
 
-Evidence against a firm "IS transferred" claim:
-
-- The write-open fragment `60 20 01` is absent from both binaries (0/0), and
-  the Mac FFS open takes its mode as a runtime `openFlag:` argument, so the
-  scanner cannot observe the write-open path at all.
-- The `FS.bin` string is absent from both binaries (0/0); on Mac the name is
-  assembled from `FS` + `%@.bin`, and on Windows payloads are numeric resources
-  with no name strings, so the string counts cannot confirm which payloads are
-  sent.
-- Public reports state that official update mode does not restore the
-  filesystem on G1 Four (`2026-09-27-prior-art.md`) [V]; whether the shipped
-  `FS.bin` is actually streamed, skipped by a runtime condition, or sent under
-  another model/version path cannot be decided from byte signatures.
-
-The static evidence shows FS.bin is present in the updater payload set and a
-write API exists, which leans toward transfer, but the scanner confirms neither
-the open-write step nor the selection of FS.bin for sending. E1 (live
-bidirectional capture of a real update session) is required to settle it.
+The E3 read-path gate likewise has no evidenced read opcode in code:
+code-only `file_open_read_60_20_02` is 0 in both binaries and
+`file_read_block_60_22` is 0 (EXE) / 1 (Mac, at chance). The P2 plan only
+attempts the E3 read-path probe if E1/E1-alt evidence a read opcode; with none,
+**chip-off remains the P3 primary path**.
 
 ## Caveat
 

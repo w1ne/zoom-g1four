@@ -29,3 +29,6 @@ captures both directions including the updater's commands.
 `analyze_updater.py` scans updater binaries for protocol signatures and payload
 names; results are recorded in
 `docs/research/2026-09-27-e1alt-updater-analysis.md`.
+
+Run: `.venv/bin/python -m tools.capture.analyze_updater <binary>... [--exclude <payload.bin>]... [--json]`
+(the `--exclude` payloads are subtracted so counts reflect code, not embedded data).
