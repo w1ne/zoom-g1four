@@ -11,6 +11,8 @@ firmware/repacked/*
 flash/*
 backups/*
 !**/.gitkeep
+!backups/manifests/
+!backups/manifests/*.json
 
 .venv/
 .work/
