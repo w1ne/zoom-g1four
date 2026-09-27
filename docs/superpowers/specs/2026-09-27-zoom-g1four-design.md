@@ -77,7 +77,7 @@ Components (one job each):
 |---|---|---|
 | `extract_updater` | fetch+verify official v2.00 zip, unpack app/exe resources, emit canonical bins with SHA256 | known Zoom URLs, 7z/python |
 | `zoomctl` | single CLI for all pedal I/O over USB-MIDI SysEx (identity, CRC-checked reads, gated writes); wraps/borrows `zoom-zt2` protocol lib | mido |
-| `tools/flash` playbook | documented CH341A flow for MX25L3233F + map verification vs extracted bins | hardware, P2 only |
+| flash playbook | documented CH341A flow for MX25L3233F + map verification vs extracted bins | hardware, P2 only |
 | `effects/zd2` | C sources -> TI C6000 CGT (x86 Linux Docker) -> ZDLF-wrapped ELF with correct FXID/target/CRC | TI CGT, RE notes (zoom-zt2#93/#109) |
 | `analysis/main-bin` | TI `dis6x` disassembly, string/table mapping, patch diffs | CGT toolchain |
 
@@ -101,7 +101,9 @@ Hardware tools only read unless a phase explicitly says write.
 ## Safety and error handling
 
 - Read-only default: every `zoomctl` command reads unless `--write` is passed;
-  `--write` refuses without a valid backup manifest from current pedal state.
+  `--write` refuses without a valid backup manifest from current pedal state
+  (a manifest = JSON in `backups/` listing every artifact, its CRC/SHA256, and
+  the pedal identity/version it came from).
 - Banned by default: changing effect category IDs (documented FS corruption),
   full-FS rewrites, any operation during unstable USB.
   One mutation per test, always.
