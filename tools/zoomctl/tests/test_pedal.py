@@ -214,8 +214,9 @@ def test_file_download_reads_blocks_until_empty_and_closes():
     block += list(pack_7bit(data)) + list(crc32_5(data))
     end = [0x52, 0x00, 0x6E, 0x60, 0x04, 0, 0, 0, 0, 0]
     ack = [0x52, 0x00, 0x6E, 0x60, 0x05]
+    open_reply = sysex([0x52, 0x00, 0x6E, 0x60, 0x20])
     transport = FakeTransport([
-        sysex([0x52, 0x00, 0x6E, 0x60, 0x20]),  # open
+        open_reply, open_reply,                  # open is sent twice (reference behavior)
         sysex(ack), sysex([0x52, 0x00, 0x6E, 0x60, 0x22]), sysex(block),
         sysex(ack), sysex([0x52, 0x00, 0x6E, 0x60, 0x22]), sysex(end),
         sysex([0x52, 0x00, 0x6E, 0x60, 0x21]),  # close
@@ -224,9 +225,14 @@ def test_file_download_reads_blocks_until_empty_and_closes():
     pedal = ZoomPedal(transport)
 
     result = pedal.file_download("X.ZD2")
+    pedal.file_close()
 
     assert result == data
     assert list(transport.sent[0].data) == [0x52, 0x00, 0x6E, 0x60, 0x20, 0x02, 0, 0, 0, 0, 0, 0, 0, 0, 0, ord("X"), ord("."), ord("Z"), ord("D"), ord("2"), 0]
+    assert list(transport.sent[1].data) == list(transport.sent[0].data)
+    assert list(transport.sent[-2].data) == [0x52, 0x00, 0x6E, 0x60, 0x21, 0x40, 0x00, 0x00, 0x00, 0x00]
+    assert list(transport.sent[-1].data) == [0x52, 0x00, 0x6E, 0x60, 0x09]
+    assert transport.responses == []
 
 
 def test_file_download_truncated_block_raises():
@@ -235,11 +241,41 @@ def test_file_download_truncated_block_raises():
     block += [len(data) & 0x7F, (len(data) >> 7) & 0x7F]
     block += list(pack_7bit(data))[:3]
     ack = [0x52, 0x00, 0x6E, 0x60, 0x05]
+    open_reply = sysex([0x52, 0x00, 0x6E, 0x60, 0x20])
     transport = FakeTransport([
-        sysex([0x52, 0x00, 0x6E, 0x60, 0x20]),
+        open_reply, open_reply,
         sysex(ack), sysex([0x52, 0x00, 0x6E, 0x60, 0x22]), sysex(block),
     ])
     pedal = ZoomPedal(transport)
 
     with pytest.raises(PedalError, match="truncated file reply"):
         pedal.file_download("X.ZD2")
+
+
+def test_file_wild_raises_on_unterminated_name():
+    reply = sysex([0x52, 0x00, 0x6E, 0x60, 0x04] + list(b"ABCDEFGHIJKLM"))
+    pedal = ZoomPedal(FakeTransport([reply]))
+
+    with pytest.raises(PedalError, match="unterminated file name"):
+        pedal.file_wild(first=True)
+
+
+def test_file_download_size_cap(monkeypatch):
+    from tools.zoomctl import pedal as pedal_module
+
+    monkeypatch.setattr(pedal_module, "FILE_SIZE_CAP", 20)
+    data = b"0123456789abcdef"
+    block = [0x52, 0x00, 0x6E, 0x60, 0x04, 0, 0, 0]
+    block += [len(data) & 0x7F, (len(data) >> 7) & 0x7F]
+    block += list(pack_7bit(data)) + list(crc32_5(data))
+    ack = [0x52, 0x00, 0x6E, 0x60, 0x05]
+    open_reply = sysex([0x52, 0x00, 0x6E, 0x60, 0x20])
+    transport = FakeTransport([
+        open_reply, open_reply,
+        sysex(ack), sysex([0x52, 0x00, 0x6E, 0x60, 0x22]), sysex(block),
+        sysex(ack), sysex([0x52, 0x00, 0x6E, 0x60, 0x22]), sysex(block),
+    ])
+    pedal = ZoomPedal(transport)
+
+    with pytest.raises(PedalError, match="exceeds size cap"):
+        pedal.file_download("BIG.ZD2")
