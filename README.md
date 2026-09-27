@@ -35,6 +35,21 @@ Read `docs/superpowers/specs/2026-09-27-zoom-g1four-design.md` for the design an
 | P5b | String-patched `Main.bin` boots | M5b | not started |
 | P6 | Clean-room firmware go/no-go | M6 | not started |
 
+## Extract official firmware (P0)
+
+Prerequisites: Python >= 3.11, 7-Zip CLI (`brew install sevenzip`).
+
+```bash
+python3 -m venv .venv
+.venv/bin/python -m pip install -q -U pip pytest   # pytest only needed to run tests
+.venv/bin/python -m tools.extract_updater fetch     # download official v2.00 packages
+.venv/bin/python -m tools.extract_updater extract   # -> firmware/extracted/*.bin + SHA256SUMS
+.venv/bin/python -m tools.extract_updater verify    # run after extract
+```
+
+Hashes are committed (`firmware/extracted/SHA256SUMS`); the packages and payload
+`.bin` files stay gitignored. Details: `docs/research/2026-09-27-p0-recon.md`.
+
 ## Safety
 
 No device writes before M3. The only exception is the E1 official same-version

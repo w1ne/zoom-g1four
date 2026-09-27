@@ -84,7 +84,7 @@ Components (one job each):
 
 | Component | Job | Depends on |
 |---|---|---|
-| `extract_updater` | parse updater container (32-byte table, 4096-byte blocks), emit all five bins + SHA256SUMS, golden tests | Zoom URLs, python |
+| `extract_updater` | download/extract all five payloads from both official platforms, verify byte-equality + known-good hashes, emit bins + SHA256SUMS (payloads gitignored, hashes committed) | Zoom URLs, python, 7zz |
 | `repack_updater` | rebuild updater from bins, emit byte-diff report; zero-change round-trip must be byte-identical | `extract_updater` parser |
 | `zoomctl` | all pedal I/O over USB-MIDI SysEx: identity, mode detection, read-only backup, gated writes | mido (verified working) |
 | `tools/capture` | documented USB capture procedures for supported hosts | Linux/Windows capture host |
@@ -237,8 +237,10 @@ a clean-room firmware. Deliverable: **M6**.
 
 ## Testing and verification
 
-- **P0:** golden tests (sizes, magics, known strings), parser round-trip,
-  Mac/Windows payload equality, mismatch abort policy.
+- **P0:** golden tests (sizes, hashes), Mac/Windows payload byte-equality,
+  mismatch abort + report policy, published hashes cross-checked; network
+  integration test; magic/string observations documented in the recon notes
+  (informational, not machine-checked).
 - **P1:** re-read random FS files and compare CRCs; manifest schema validation;
   transfer-time measurement.
 - **P2:** E1-alt/E1 analysis; E4 routing matrix; E5 byte-identical repack;
@@ -255,7 +257,7 @@ a clean-room firmware. Deliverable: **M6**.
 
 | Milestone | Meaning |
 |---|---|
-| M0 | canonical bins + SHA256SUMS committed |
+| M0 | canonical bins extracted and verified; SHA256SUMS committed (bins gitignored) |
 | M1 | read-only backup verified (required before any write, including E1) |
 | M2 | decision table recorded (E1-alt/E1–E6) |
 | M3 | full-chip dump + memory map + restore path verified at the level recorded in recovery.md; write gate opens |
