@@ -60,4 +60,7 @@ def extract_zip(zip_path: Path, dest_dir: Path) -> Path:
             target.parent.mkdir(parents=True, exist_ok=True)
             with archive.open(info) as src, open(target, "wb") as out:
                 shutil.copyfileobj(src, out)
+            mode = (info.external_attr >> 16) & 0o777
+            if mode:
+                target.chmod(mode)
     return dest_dir

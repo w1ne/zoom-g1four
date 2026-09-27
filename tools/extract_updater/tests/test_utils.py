@@ -128,3 +128,17 @@ def test_download_sets_browser_user_agent(tmp_path, monkeypatch):
     assert captured["request"].full_url == "https://example.invalid/payload.bin"
     assert captured["timeout"] == 30
     assert dest.read_bytes() == b"payload"
+
+
+def test_extract_zip_preserves_unix_mode(tmp_path):
+    import zipfile
+
+    archive = tmp_path / "modes.zip"
+    info = zipfile.ZipInfo("bin/tool")
+    info.external_attr = 0o755 << 16
+    with zipfile.ZipFile(archive, "w") as zf:
+        zf.writestr(info, b"#!/bin/sh\n")
+
+    out = extract_zip(archive, tmp_path / "out")
+
+    assert (out / "bin" / "tool").stat().st_mode & 0o777 == 0o755
