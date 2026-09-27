@@ -10,7 +10,8 @@ from pathlib import Path
 
 KNOWN_EXTENSIONS = ("ZD2", "ZIC", "ZIR", "ZT2")
 NAME_RE = re.compile(
-    rb"[A-Z0-9_]{1,8}\.(?:%s)" % b"|".join(e.encode("ascii") for e in KNOWN_EXTENSIONS)
+    rb"(?<![A-Z0-9_])[A-Z0-9_]{1,12}\.(?:%s)(?![A-Z0-9_])"
+    % b"|".join(extension.encode("ascii") for extension in KNOWN_EXTENSIONS)
 )
 
 
