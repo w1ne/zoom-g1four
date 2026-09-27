@@ -121,6 +121,8 @@ class ZoomPedal:
 
     def file_download(self, name: str) -> bytes:
         header = [0x52, 0x00, 0x6E, 0x60, 0x20, 0x02] + [0x00] * 9
+        # The reference implementation sends the open request twice; hardware-verified.
+        # See docs/research/2026-09-27-p1-protocol.md.
         self._filename_request(header, name)
         self._filename_request(header, name)
         collected = bytearray()
