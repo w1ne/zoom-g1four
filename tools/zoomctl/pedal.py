@@ -8,7 +8,7 @@ import binascii
 
 import mido
 
-from .codec import decode_crc32_5, pack_7bit, unpack_7bit
+from .codec import decode_crc32_5, unpack_7bit
 
 MODELS = {
     (0x0C, 0x00): "G1 Four",
@@ -60,6 +60,8 @@ class ZoomPedal:
     def patch_check(self) -> tuple[int, int, int]:
         reply = self._request([0x52, 0x00, 0x6E, 0x44])
         packet = list(reply.data)
+        if len(packet) < 12:
+            raise PedalError(f"truncated patch info reply: {packet}")
         count = packet[5] * 128 + packet[4]
         patch_size = packet[7] * 128 + packet[6]
         bank_size = packet[11] * 128 + packet[10]
@@ -76,9 +78,16 @@ class ZoomPedal:
             ]
         )
         packet = list(reply.data)
+        if len(packet) < 12:
+            raise PedalError(f"truncated patch reply for patch {location}: {len(packet)} bytes")
         length = packet[11] * 128 + packet[10]
         if length == 0:
             return b""
+        expected = 12 + length + (length + 6) // 7 + 5
+        if len(packet) < expected:
+            raise PedalError(
+                f"truncated patch reply for patch {location}: {len(packet)} < {expected}"
+            )
         block = unpack_7bit(bytes(packet[12:12 + length + length // 7 + 1]))
         checksum = decode_crc32_5(bytes(packet[-5:]))
         if (checksum ^ 0xFFFFFFFF) != binascii.crc32(block):

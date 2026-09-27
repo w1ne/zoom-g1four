@@ -21,6 +21,7 @@ def test_unpack_known_vectors_and_dangling_msb():
     assert unpack_7bit(b"\x7f" + b"\x00" * 7) == b"\x80" * 7
     assert unpack_7bit(b"\x40\x00\x00") == b"\x80\x00"
     assert unpack_7bit(b"\x40\x55\x7f") == b"\xd5\x7f"
+    assert unpack_7bit(b"\x01") == b""
 
 
 def test_crc32_5_known_vector():
