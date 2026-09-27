@@ -4,6 +4,8 @@ Packet formats ported from mungewell/zoom-zt2 (MIT), pinned commit
 b1f63b0bee6d2d1bc9755958fc8cf15887efbdcf. See THIRD_PARTY_NOTICES.md.
 """
 
+import binascii
+
 import mido
 
 from .codec import decode_crc32_5, pack_7bit, unpack_7bit
@@ -54,3 +56,31 @@ class ZoomPedal:
             "model": MODELS.get(model, f"unknown ({model[0]:02X} {model[1]:02X})"),
             "firmware": version,
         }
+
+    def patch_check(self) -> tuple[int, int, int]:
+        reply = self._request([0x52, 0x00, 0x6E, 0x44])
+        packet = list(reply.data)
+        count = packet[5] * 128 + packet[4]
+        patch_size = packet[7] * 128 + packet[6]
+        bank_size = packet[11] * 128 + packet[10]
+        return count, patch_size, bank_size
+
+    def patch_download(self, location: int, bsize: int) -> bytes:
+        bank = (location - 1) // bsize
+        loc = location - bank * bsize - 1
+        reply = self._request(
+            [
+                0x52, 0x00, 0x6E, 0x46, 0x00, 0x00,
+                bank & 0x7F, (bank >> 7) & 0x7F,
+                loc & 0x7F, (loc >> 7) & 0x7F,
+            ]
+        )
+        packet = list(reply.data)
+        length = packet[11] * 128 + packet[10]
+        if length == 0:
+            return b""
+        block = unpack_7bit(bytes(packet[12:12 + length + length // 7 + 1]))
+        checksum = decode_crc32_5(bytes(packet[-5:]))
+        if (checksum ^ 0xFFFFFFFF) != binascii.crc32(block):
+            raise PedalError(f"checksum mismatch for patch {location}")
+        return block
