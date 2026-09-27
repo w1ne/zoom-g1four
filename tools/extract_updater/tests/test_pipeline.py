@@ -1,6 +1,8 @@
+from pathlib import Path
+
 import pytest
 
-from tools.extract_updater import pipeline
+from tools.extract_updater import constants, pipeline
 
 
 def _bins(tmp_path, name_to_bytes):
@@ -51,3 +53,53 @@ def test_canonicalize_writes_report_and_raises_on_mismatch(tmp_path):
     assert "Main.bin" in text
     assert pipeline.sha256_file(mac["Main.bin"]) in text
     assert pipeline.sha256_file(win_path) in text
+
+
+def test_canonicalize_rejects_payload_set_mismatch(tmp_path):
+    mac = _bins(tmp_path, {"Main.bin": b"a"})
+
+    with pytest.raises(ValueError, match="payload set mismatch"):
+        pipeline.canonicalize(mac, {})
+
+
+def test_fetch_all_redownloads_when_local_hash_wrong(tmp_path, monkeypatch):
+    official = tmp_path / "official"
+    official.mkdir()
+    for pkg in constants.OFFICIAL_PACKAGES.values():
+        (official / pkg["filename"]).write_bytes(b"stale")
+    calls = []
+
+    def fake_download(url, dest, expected_sha256):
+        calls.append((url, Path(dest), expected_sha256))
+        Path(dest).write_bytes(b"fresh")
+        return Path(dest)
+
+    monkeypatch.setattr(pipeline, "download", fake_download)
+
+    result = pipeline.fetch_all(official)
+
+    assert len(calls) == 2
+    assert set(result) == {"mac", "win"}
+
+
+def test_fetch_all_reuses_local_file_with_matching_hash(tmp_path, monkeypatch):
+    official = tmp_path / "official"
+    official.mkdir()
+    for pkg in constants.OFFICIAL_PACKAGES.values():
+        (official / pkg["filename"]).write_bytes(b"good")
+
+    def fake_sha256(path):
+        name = Path(path).name
+        if name == constants.OFFICIAL_PACKAGES["mac"]["filename"]:
+            return constants.OFFICIAL_PACKAGES["mac"]["sha256"]
+        return constants.OFFICIAL_PACKAGES["win"]["sha256"]
+
+    def fail_download(*args, **kwargs):
+        raise AssertionError("download must not be called for verified local files")
+
+    monkeypatch.setattr(pipeline, "sha256_file", fake_sha256)
+    monkeypatch.setattr(pipeline, "download", fail_download)
+
+    result = pipeline.fetch_all(official)
+
+    assert set(result) == {"mac", "win"}
