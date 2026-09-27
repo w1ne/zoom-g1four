@@ -1,6 +1,7 @@
 import mido
 import pytest
 
+from tools.zoomctl.codec import crc32_5, pack_7bit
 from tools.zoomctl.pedal import PedalError, ZoomPedal
 from tools.zoomctl.tests.fake_transport import FakeTransport, sysex
 from tools.zoomctl.transport import MidoTransport, TransportError, ZOOM_PORT_PREFIX
@@ -71,3 +72,50 @@ def test_identity_truncated_reply_raises():
 
     with pytest.raises(PedalError, match="truncated"):
         pedal.identity()
+
+
+def test_patch_check_decodes_counts():
+    reply = sysex([0x52, 0x00, 0x6E, 0x44, 60, 0, 0x20, 0x00, 0, 0, 10, 0])
+    transport = FakeTransport([reply])
+    pedal = ZoomPedal(transport)
+
+    count, psize, bsize = pedal.patch_check()
+
+    assert (count, psize, bsize) == (60, 32, 10)
+    assert list(transport.sent[0].data) == [0x52, 0x00, 0x6E, 0x44]
+
+
+def test_patch_download_returns_data_and_verifies_crc():
+    data = b"ZPTC-patch-payload"
+    packet = [0x52, 0x00, 0x6E, 0x60, 0x04, 0, 0, 0, 0, 0]
+    packet += [len(data) & 0x7F, (len(data) >> 7) & 0x7F]
+    packet += list(pack_7bit(data)) + list(crc32_5(data))
+    transport = FakeTransport([sysex(packet)])
+    pedal = ZoomPedal(transport)
+
+    result = pedal.patch_download(location=1, bsize=10)
+
+    assert result == data
+    assert list(transport.sent[0].data) == [0x52, 0x00, 0x6E, 0x46, 0x00, 0x00, 0, 0, 0, 0]
+
+
+def test_patch_download_bank_and_location_math():
+    packet = [0x52, 0x00, 0x6E, 0x60, 0x04, 0, 0, 0, 0, 0, 0, 0] + list(crc32_5(b""))
+    transport = FakeTransport([sysex(packet)])
+    pedal = ZoomPedal(transport)
+
+    pedal.patch_download(location=23, bsize=10)
+
+    assert list(transport.sent[0].data) == [0x52, 0x00, 0x6E, 0x46, 0x00, 0x00, 2, 0, 2, 0]
+
+
+def test_patch_download_raises_on_bad_crc():
+    data = b"payload"
+    packet = [0x52, 0x00, 0x6E, 0x60, 0x04, 0, 0, 0, 0, 0]
+    packet += [len(data) & 0x7F, (len(data) >> 7) & 0x7F]
+    packet += list(pack_7bit(data)) + [0x01, 0x02, 0x03, 0x04, 0x05]
+    transport = FakeTransport([sysex(packet)])
+    pedal = ZoomPedal(transport)
+
+    with pytest.raises(PedalError, match="checksum"):
+        pedal.patch_download(location=1, bsize=10)

@@ -2,6 +2,9 @@
 
 Protocol logic ported from mungewell/zoom-zt2 (MIT), pinned commit
 b1f63b0bee6d2d1bc9755958fc8cf15887efbdcf. See THIRD_PARTY_NOTICES.md.
+
+The unpacker ignores a trailing MSB byte that has no payload bytes after it
+(callers intentionally over-read one byte past a full 7-byte group).
 """
 
 import binascii
