@@ -6,7 +6,7 @@
 | E2 | done | see below |
 | E3 | pending | |
 | E4 | done | no pedal USB audio (MIDI-only); external capture required; see below |
-| E5 | pending | |
+| E5 | done | container regeneration verified; see below |
 | E6 | pending | |
 
 ## E2 — flasher host
@@ -93,3 +93,65 @@ Operator brief for P4 audio tests:
 - Tooling note: `play_and_record` uses a duplex `sounddevice.playrec` stream. The planned
   `rec()`+`play()` pair never waits for the record stream (`wait()` tracks only the most recent
   stream), so it read uninitialized frames (NaN/full-scale garbage); fixed during E4.
+
+## E5 — zero-change repack round-trip
+
+Tools: `tools/repack_updater/repack_win.py` (PE resource patching in place) and
+`tools/repack_updater/repack_mac.py` (resource replacement + ad-hoc re-sign). Unit tests:
+`.venv/bin/python -m pytest tools/repack_updater/tests -v` -> `4 passed`. `pefile 2024.8.26`
+installed in the venv (already declared under the `recon` extra, installed manually per the
+pyproject note). No updater was launched in this task.
+
+### Discovered PE resource layout (matches the P0/plan assumption; no adaptation needed)
+
+The resource type is a **named** top-level entry `BIN` (not a numeric type id); each payload has
+a single language entry (LCID 1041), and 7zz renders the same tree as `.rsrc/1041/BIN/<id>`:
+
+| id | file | file offset | size |
+|---|---|---|---|
+| 129 | Main.bin | 0x4aa28 | 493412 |
+| 133 | Preset.bin | 0xc318c | 45056 |
+| 136 | FS.bin | 0xce18c | 3137536 |
+| 139 | MAIN_INFO.bin | 0x3cc18c | 4096 |
+| 142 | ROM.bin | 0x3cd18c | 163840 |
+
+`find_resource_offset` matched via its named-type branch (`type_name == "BIN"`); the RT_RCDATA
+id-10 fallback is not exercised on this EXE.
+
+### Windows results
+
+Zero-change repack (all five canonical payloads from `firmware/extracted`), verbatim:
+
+    {'in': '.work/p0/win/G1 FOUR_v2.00_Win_E/ZOOM G1 FOUR System v2.00 Updater.exe', 'out': '.work/p2/repack/zero_change.exe', 'replaced': [129, 133, 136, 139, 142], 'in_sha256': '1dfabfcd45be26738334a8ab5e18a316b5d6beba6dfaa75bd3283771d2dd8a5b', 'out_sha256': '1dfabfcd45be26738334a8ab5e18a316b5d6beba6dfaa75bd3283771d2dd8a5b'}
+    ZERO_CHANGE_BYTE_IDENTICAL
+
+One-byte edit (`Main.bin[100] ^= 0xFF` in a copy of the bin dir), verbatim end of the run:
+out SHA256 `f18fc4228fcb5f2928d43a63ea1882b9e955b6e225a008f5ac20934fa6056fef` and
+`ONE_BYTE_ROUND_TRIP_OK`. `cmp -l` against the original shows exactly 1 differing byte, at file
+offset 305804 (`0x4AA2C` = Main.bin resource offset `0x4AA28` + 100), and the resource
+re-extracted with 7zz (`.rsrc/1041/BIN/129`) is byte-identical to the patched `Main.bin`.
+
+Limitation: the Windows path patches in place and rejects size-changing payloads (`ValueError`);
+a size-changing edit would need the Mac path or a full PE resource rewriter.
+
+### Mac results
+
+Repack of a copy of the official `.app` with the five canonical bins, then ad-hoc re-sign,
+verbatim:
+
+    {'app': '.work/p2/repack/Updater.app', 'replaced': ['FS.bin', 'MAIN_INFO.bin', 'Main.bin', 'Preset.bin', 'ROM.bin'], 'verified': True}
+    MAC_SIGNED_OK
+
+`codesign --verify --deep --strict` passes; `codesign -dv` reports `Signature=adhoc`,
+`Identifier=jp.co.zoom.EFX-Updater`, `TeamIdentifier=not set` — the Developer ID/notarization
+chain is gone after editing, as expected. All five resources are byte-identical to
+`firmware/extracted` after the repack (`sha256sum -c SHA256SUMS`: all `OK`); the upstream
+`_CodeSignature`/`CodeResources` are superseded by the ad-hoc signature. Only signature validity
+was checked (the no-launch rule stands); actual launchability of the modified app is untested and
+left to P5a.
+
+### Decision
+
+- **No mismatch** in the zero-change round-trip (EXE out SHA == in SHA; Mac payloads
+  byte-identical to the originals) and the one-byte edit landed exactly at resource 129 —
+  decision rule outcome: **container regeneration verified**; no issue found before P5a.
