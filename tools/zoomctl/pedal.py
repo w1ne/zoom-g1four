@@ -93,3 +93,55 @@ class ZoomPedal:
         if (checksum ^ 0xFFFFFFFF) != binascii.crc32(block):
             raise PedalError(f"checksum mismatch for patch {location}")
         return block
+
+    def _filename_request(self, header: list[int], name: str) -> mido.Message:
+        data = header + [ord(ch) for ch in name] + [0x00]
+        return self._request(data)
+
+    def file_check(self, name: str) -> bool:
+        self._filename_request([0x52, 0x00, 0x6E, 0x60, 0x25, 0x00, 0x00], name)
+        response = self._request([0x52, 0x00, 0x6E, 0x60, 0x05, 0x00])
+        self._request([0x52, 0x00, 0x6E, 0x60, 0x27])
+        if len(response.data) < 5:
+            raise PedalError(f"truncated file check reply for {name}: {list(response.data)}")
+        return bytes(response.data[-5:]) == b"\x00" * 5
+
+    def file_wild(self, first: bool) -> str:
+        header = [0x52, 0x00, 0x6E, 0x60, 0x25 if first else 0x26, 0x00, 0x00]
+        reply = self._filename_request(header, "*")
+        data = list(reply.data)
+        if len(data) > 4 and data[4] == 4:
+            for end in range(14, min(27, len(data))):
+                if data[end] == 0:
+                    return bytes(data[14:end]).decode("utf-8")
+        return ""
+
+    def file_download(self, name: str) -> bytes:
+        header = [0x52, 0x00, 0x6E, 0x60, 0x20, 0x02] + [0x00] * 9
+        self._filename_request(header, name)
+        collected = bytearray()
+        while True:
+            self._request([0x52, 0x00, 0x6E, 0x60, 0x05, 0x00])
+            self._request([0x52, 0x00, 0x6E, 0x60, 0x22, 0x14, 0x2F, 0x60, 0x00, 0x0C, 0x00, 0x04, 0x00, 0x00, 0x00])
+            reply = self._request([0x52, 0x00, 0x6E, 0x60, 0x05, 0x00])
+            packet = list(reply.data)
+            if len(packet) < 10:
+                raise PedalError(f"truncated file reply for {name}: {len(packet)} bytes")
+            length = packet[9] * 128 + packet[8]
+            if packet[4] != 4 or length == 0:
+                break
+            expected = 10 + length + (length + 6) // 7 + 5
+            if len(packet) < expected:
+                raise PedalError(
+                    f"truncated file reply for {name}: {len(packet)} < {expected}"
+                )
+            block = unpack_7bit(bytes(packet[10:10 + length + length // 7 + 1]))
+            checksum = decode_crc32_5(bytes(packet[-5:]))
+            if (checksum ^ 0xFFFFFFFF) != binascii.crc32(block):
+                raise PedalError(f"checksum mismatch for file {name}")
+            collected += block
+        return bytes(collected)
+
+    def file_close(self) -> None:
+        self._request([0x52, 0x00, 0x6E, 0x60, 0x21, 0x40, 0x00, 0x00, 0x00, 0x00])
+        self._request([0x52, 0x00, 0x6E, 0x60, 0x09])
