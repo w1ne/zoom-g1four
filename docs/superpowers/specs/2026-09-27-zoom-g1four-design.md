@@ -24,8 +24,9 @@ capability and evidence needed to get there without destroying the device.
 Target device (live-verified this session):
 
 - **Zoom G1 Four**, firmware **v2.00**. USB `1686:04a1`, "ZOOM G Series",
-  full-speed, USB Audio + MIDI Streaming. Identity reply:
-  `F0 7E 00 06 02 52 6E 00 0C 00 32 2E 30 30 F7` (model bytes `0C 00`). [V]
+  full-speed; interfaces are AudioControl + MIDI Streaming only — the device
+  exposes **no USB audio streaming** (confirmed by E4, 2026-09-27). Identity
+  reply: `F0 7E 00 06 02 52 6E 00 0C 00 32 2E 30 30 F7` (model bytes `0C 00`). [V]
 - Same PID/string shared by G1X Four (`0D 00`), B1 Four (`0E 00`), B1X Four
   (`0F 00`), GCE-3 (`10 00`). Model is discriminated via SysEx identity, never
   by PID. [V]
@@ -41,8 +42,9 @@ Target device (live-verified this session):
     filesystem on this model;
   - whether update mode supports a flash **read** command (one report of a full
     8 MB read — treat as rumor);
-  - whether the pedal's USB audio loops playback through the effect chain in a
-    way usable for automated tests;
+  - ~~whether the pedal's USB audio loops playback through the effect chain~~
+    resolved by E4: no USB audio exists; audio verification requires external
+    analog capture (or manual listening);
   - the exact ZD2 runtime ABI for self-compiled modules.
 
 Detailed prior art, sources, and URLs: `docs/research/2026-09-27-prior-art.md`.
@@ -150,7 +152,10 @@ decision table in `docs/research/`. Decision rules are part of each experiment.
   automated FFT fixture; elif only playback loopback works -> capture the
   pedal's analog output through an external USB audio interface with manual
   routing; else -> manual listening test, M4a audible check is
-  operator-verified with recorded audio kept as evidence.
+  operator-verified with recorded audio kept as evidence. *Outcome
+  (2026-09-27):* no USB audio streaming exists at all, so the else/external
+  branch applies — P4 audio checks use external analog capture with the
+  operator brief in the P2 decision table.
 - **E5 Zero-change repack round-trip.** Host-side: repack extracted bins,
   assert byte-identical to original updater. *Decision rule:* mismatch -> fix
   the container parser before P5a.
@@ -301,6 +306,7 @@ Each resolves through a named experiment or is explicitly out of scope.
 2. Update-mode read opcode? -> E1, E3; if absent, hardware dump (P3 primary).
 3. Role of `MAIN_INFO.bin` / integrity checks -> P5b decision rule.
 4. ZD2 runtime ABI -> P4b (`ABI.md`).
-5. USB audio routing usable for tests -> E4; falls back to physical capture or
-   manual listening per decision rule.
+5. USB audio routing usable for tests -> resolved by E4: no USB audio
+   streaming; external analog capture (operator-wired) with manual listening as
+   fallback.
 6. C6745 JTAG pinout -> escape hatch, not planned.

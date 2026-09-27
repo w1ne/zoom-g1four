@@ -3,8 +3,9 @@
 | Experiment | Status | Decision / finding |
 |---|---|---|
 | E1-alt | done | inconclusive (E1 required); see e1alt-updater-analysis.md |
+| E1 | scheduled | operator-assisted same-version reflash; preflight filled in docs/recovery.md |
 | E2 | done | see below |
-| E3 | pending | |
+| E3 | done | no read opcode evidenced in code (E1-alt); chip-off is the P3 primary path |
 | E4 | done | no pedal USB audio (MIDI-only); external capture required; see below |
 | E5 | done | container regeneration verified; see below |
 | E6 | done | auto-detectable via identity firmware string (see below) |

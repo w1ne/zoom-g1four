@@ -67,6 +67,24 @@ This is procedural — vendor binaries cannot be technically gated.
 Operation log (append one entry per flash: date, operation, files+hashes,
 result, follow-up):
 
+### E1 preflight (filled 2026-09-27)
+
+- Operation: official v2.00 same-version reflash of the G1 Four via the macOS
+  updater (Rosetta), with the device->host MIDI side-capture running.
+- Manifest: `backups/manifests/83d9f8a31176623b56373e6aec1b90045914585546836b4ca75f2eb88515c7f1.json` (M1, verified).
+- Dump requirement: not applicable (E1 is not a Main.bin flash; the M3 dump is
+  required only for P5a/P5b).
+- Flasher host: decided in E2 (official macOS updater under Rosetta; launch
+  smoke test passed).
+- Updater file: `.work/p0/mac/G1 FOUR_v2.00_Mac_E/ZOOM G1 FOUR System v2.00 Updater.app`
+  from `firmware/official/G1_FOUR_v2.00_Mac_E.zip`
+  (sha256 `f90c831af6a8d43ec480f69d78a6a1c16369ac7902a8a85086aa581720b05010`).
+  Pristine zip preserved.
+- Rollback: escalation 1 (retry the official reflash); escalations 2/3 below.
+- Operator present: yes; no other MIDI/USB traffic on the pedal's port; power
+  stable.
+
+
 ## Rehearsal record
 
 Not yet performed. Required before M3 is declared complete. Minimum without a
