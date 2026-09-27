@@ -28,7 +28,10 @@ class ZoomPedal:
 
     def _request(self, data) -> mido.Message:
         self.transport.send(mido.Message("sysex", data=list(data)))
-        return self.transport.receive()
+        reply = self.transport.receive()
+        if not isinstance(reply, mido.Message) or reply.type != "sysex":
+            raise PedalError(f"unexpected MIDI message from pedal: {reply}")
+        return reply
 
     def pcmode_on(self) -> None:
         self._request([0x52, 0x00, 0x6E, 0x52])
@@ -39,8 +42,10 @@ class ZoomPedal:
     def identity(self) -> dict:
         reply = self._request([0x7E, 0x00, 0x06, 0x01])
         data = list(reply.data)
-        if len(data) < 10 or data[0:4] != [0x7E, 0x00, 0x06, 0x02]:
+        if data[0:4] != [0x7E, 0x00, 0x06, 0x02]:
             raise PedalError(f"unexpected identity reply: {data}")
+        if len(data) < 9:
+            raise PedalError(f"truncated identity reply: {data}")
         model = (data[7], data[8])
         version = bytes(data[9:]).decode("ascii", "replace")
         return {
