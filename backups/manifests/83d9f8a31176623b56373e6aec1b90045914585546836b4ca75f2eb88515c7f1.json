@@ -1,0 +1,1259 @@
+{
+  "created_utc": "2026-09-27T13:44:23Z",
+  "fs": {
+    "files": [
+      {
+        "crc32_device_ok": true,
+        "name": "Clap.raw",
+        "read_seconds": 1.4147,
+        "sha256": "be5a246962d8e24ba09c6657d03336023bbac73a30f48d70bae36005bab01889",
+        "size": 10640
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "ClapAmb.raw",
+        "read_seconds": 1.7873,
+        "sha256": "95b07327b9af259bbe04edbe4a8779c53bad3307b061472567abf4ff7b3bf5d0",
+        "size": 17640
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "Click.raw",
+        "read_seconds": 0.755,
+        "sha256": "da5839edb2ed51d0385db8624a8c6ba6b1e7918327288e54023afb600c761635",
+        "size": 2760
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "HHC.raw",
+        "read_seconds": 1.6426,
+        "sha256": "33bc8b0e85028e38a98877eacc91e2e2231b58c110bccd318d67dc5368a95f64",
+        "size": 15494
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "HHCAmb.raw",
+        "read_seconds": 2.6304,
+        "sha256": "f152254c09724ade7a31be915bc9442ac68da1cbaa24bfc6862fe170c5a50b9b",
+        "size": 29276
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "HHF.raw",
+        "read_seconds": 1.0032,
+        "sha256": "a95a1689bf93f1cf819d8be26f5b899dd4d5a39665439325b33b1d3954b68b1a",
+        "size": 7064
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "HHO.raw",
+        "read_seconds": 2.9505,
+        "sha256": "13fde7c99d4f1c952e955df8e2861a8ee9cdd01ffb96b033ce7a272c8991cbee",
+        "size": 33802
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "HHOAmb.raw",
+        "read_seconds": 2.9894,
+        "sha256": "c6e61c161a6ae0bf4c47d5750df2e04b75b4da760761cc9636d5d6abec4da621",
+        "size": 34638
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "Kik1.raw",
+        "read_seconds": 1.9996,
+        "sha256": "37273c3eca74950fce945548a98c6b10c5610c07660f9c83a71c3c62e6540675",
+        "size": 20796
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "Kik2.raw",
+        "read_seconds": 1.5972,
+        "sha256": "3a3f3dfe407751808b48afed73fafe285eec5b6e6e871fa0c259c33dbaedab11",
+        "size": 15094
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "KikAmb.raw",
+        "read_seconds": 2.4808,
+        "sha256": "482c136926a299596e1d6576f3a99c5dbdb6e38a30b71343b60a9626c298b080",
+        "size": 27454
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "Ride.raw",
+        "read_seconds": 5.2521,
+        "sha256": "3da347451f57383688310032b8dc6834b679ce1eff0262a4ff53588ba12f7ca8",
+        "size": 66508
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "Rim.raw",
+        "read_seconds": 1.1833,
+        "sha256": "57cf2fb80418754b0e9ffe22a62c7ddab6d6add8fe3fbe929377e46137c9b189",
+        "size": 9626
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "RimAmb.raw",
+        "read_seconds": 2.3658,
+        "sha256": "bad95b5991b6948b9a615721619f983b2914a2114a4b810f53b9b1a9d8b5f26a",
+        "size": 26010
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "Snr1.raw",
+        "read_seconds": 2.3477,
+        "sha256": "8906d4edc3289921b4b699fffa73cce5d2e3c5fc9dcc117d2e9d4dba4d4495d4",
+        "size": 25122
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "Snr2.raw",
+        "read_seconds": 1.7711,
+        "sha256": "150f190d9ea845466ef08b2bd3f2c097fa5b2183ea81c6b65ee7d9226fd2903d",
+        "size": 17658
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "Snr3.raw",
+        "read_seconds": 2.2986,
+        "sha256": "9fb386a46cfbe849083592d8b2cf188eeeb7f83c04ea90c01c6ed5d9ae8604aa",
+        "size": 24740
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "Snr4.raw",
+        "read_seconds": 2.0789,
+        "sha256": "2bf3083bbe0b313405a2cd3d03392c68ab4b09a93c201b2e41bab7c497e9b964",
+        "size": 21798
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "SnrAmb.raw",
+        "read_seconds": 2.7641,
+        "sha256": "75d334b1ea0c63ab2fe38128fcc205a0cbb00069a2efbb346415ec0c68f26317",
+        "size": 31538
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "Tamb.raw",
+        "read_seconds": 1.6463,
+        "sha256": "d374bbc56ae97558fa32c27fb3f234bf6bad91e3a74dae33c1029ff2d00be59a",
+        "size": 15554
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "TomF.raw",
+        "read_seconds": 2.5694,
+        "sha256": "ecf43080de3a58778e8d62252915fb88d5fd95a99d81d5446ed8c510a30fd56d",
+        "size": 28504
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "TomFAmb.raw",
+        "read_seconds": 2.4821,
+        "sha256": "14e8768da9451de60aa91527ea2401d3d6da5d039ba80232fbf1a79366c87c58",
+        "size": 27382
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "TomH.raw",
+        "read_seconds": 2.1875,
+        "sha256": "2dfc3964803a3e0e26dfd09c9428389b02752c238356e7ac46e4799fcef37ac8",
+        "size": 23262
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "TomL.raw",
+        "read_seconds": 2.2193,
+        "sha256": "e6e9593df1c7110817bf8dadc76a771244ab6defcb9f88821f43f70942e41558",
+        "size": 23802
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "GUARDZDL.ZT2",
+        "read_seconds": 0.6088,
+        "sha256": "bf647242d29ccc4b32b3ddfef4daa18e24cf826496dfe0f9db9ce7d23a025a80",
+        "size": 1040
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "G_OUT_EQ.BDL",
+        "read_seconds": 2.1484,
+        "sha256": "facbe859960aad950e8d4aaeeb6d13c76b0d9f415b1bcf6b6c85c0773cf6c790",
+        "size": 22837
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "FLST_SEQ.ZT2",
+        "read_seconds": 1.1249,
+        "sha256": "fd7c3c2b044b8564a1f37e134ba60fe6f3980db98dd72f0a9dc7bd11494960bf",
+        "size": 8502
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "ACOSIM.ZD2",
+        "read_seconds": 2.3835,
+        "sha256": "6eb9485c981a1dafb1b8b9e62545950115577ca1312e068d6be7cb3d707da29b",
+        "size": 26014
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "ANDLY_3S.ZD2",
+        "read_seconds": 1.7831,
+        "sha256": "55e43913af1fd478b720323263c4213a55ddf1fb5333d9a236a724f0aef6a9a3",
+        "size": 17548
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "AUTOWAH.ZD2",
+        "read_seconds": 1.6703,
+        "sha256": "3c5e275651b9ac7f1c6021a6bbad7aa023050bd3dad54d3fa574bd2f4a17f1d3",
+        "size": 16034
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "BGMK1_1U.ZD2",
+        "read_seconds": 3.6167,
+        "sha256": "e0f5f6134e1694bb7895742f7a8c7a0d7fd2257926f88d6bf890a05cf7987ab3",
+        "size": 43136
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "BGN4X12.ZD2",
+        "read_seconds": 2.8861,
+        "sha256": "8ed413ab5789495ac5582172068837731167e23bb57817f7219ac69bbd5f7a13",
+        "size": 32916
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "BGTHRTTL.ZD2",
+        "read_seconds": 2.242,
+        "sha256": "83d4fb0ee2f2f0cae5dd23c988438468fc2ced5ede9a125c0d419cfa4eafd47f",
+        "size": 23761
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "BOMBER.ZD2",
+        "read_seconds": 2.7317,
+        "sha256": "a7c12333d41c25eb7a9882eb913f5100935efcba7cc6f5fd8acb6387bd3aa66d",
+        "size": 30901
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "CLONECHO.ZD2",
+        "read_seconds": 1.6309,
+        "sha256": "36cbd21c90deb42a638f0b646ccd55954dffb9708228de3ad94bb8ef98f34472",
+        "size": 15444
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "COMP.ZD2",
+        "read_seconds": 1.4953,
+        "sha256": "f75bcd1eafeeb5e0e88e985b8bb38ffa8abeea64ab31bac939a00dd6c845e5e6",
+        "size": 13390
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "CRNTRI3S.ZD2",
+        "read_seconds": 1.9578,
+        "sha256": "d11d62d1da3a31e8b0375ebd232200eb85ef72b4e03eb5a56f187a4e357b009b",
+        "size": 20468
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "DELAY_3S.ZD2",
+        "read_seconds": 1.7513,
+        "sha256": "8fcb291adec9fd13e618fb60e08e8a713e8017939254f389f1684f4a56b4f3e1",
+        "size": 17329
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "DISTPLUS.ZD2",
+        "read_seconds": 2.1392,
+        "sha256": "beca3df039374e3b8cf3466d469a74e85fa835c60f4424178a69cffb32ac7789",
+        "size": 22665
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "DIST_1.ZD2",
+        "read_seconds": 2.3003,
+        "sha256": "5d8b43234ba1842f2c10d4cea14f6bc331f1038d851ab145bb6032f8b2f6a081",
+        "size": 24865
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "DYNDRIVE.ZD2",
+        "read_seconds": 2.6611,
+        "sha256": "a485ca95dd5655d48e2f7c27422a9849d18f3460804873b37a8d89e647a2348c",
+        "size": 30178
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "DZ4X12F.ZD2",
+        "read_seconds": 2.9367,
+        "sha256": "7b2c576325b6dfc26e205f38b0bd34db8f0d54aef429871002cfe98c8b301fb1",
+        "size": 33281
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "DZ_DRV1U.ZD2",
+        "read_seconds": 3.7298,
+        "sha256": "53598b2c117863671069d8909e3a2740c24642d658bef9f9859507687511e4a8",
+        "size": 45309
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "EP_STOMP.ZD2",
+        "read_seconds": 1.735,
+        "sha256": "e5445c9952d55d0f6246f2b9317ad974de17b86fdc67e2c1e752d4dbe8de841b",
+        "size": 17262
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "FD2X12.ZD2",
+        "read_seconds": 2.8605,
+        "sha256": "d960d9b5587573b47896290aba68793718a5fd65a14c7c54dc5aa0b673e4b1a5",
+        "size": 32857
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "FDB4X10.ZD2",
+        "read_seconds": 2.8853,
+        "sha256": "f972611551edc2e17ef214958559d2b7b0c5a9eb78bd375c9ce810d8822a005d",
+        "size": 33378
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "FDBMAN1U.ZD2",
+        "read_seconds": 3.5085,
+        "sha256": "7975060e3ea5c4052a60ed40bfe5f3976922a34e4fd0a3f214b3dd834af6a728",
+        "size": 42419
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "FDDLXR1U.ZD2",
+        "read_seconds": 3.6363,
+        "sha256": "c2b04bd792bbcd15fd0010ae20e786bc61ff79a739c054f74917a54b74258304",
+        "size": 44154
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "FDDX1X12.ZD2",
+        "read_seconds": 2.8314,
+        "sha256": "10568bd9f2bdf79584530430ac3f5988ca0f0d1a2fea924869a392e882cedba9",
+        "size": 32994
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "FDSPRING.ZD2",
+        "read_seconds": 2.1908,
+        "sha256": "526bf2cdaa24c90bb8fb232017277a61bbc3ae136a6a421b4eb65b75fbc597d1",
+        "size": 23743
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "FD_TWR1U.ZD2",
+        "read_seconds": 3.6244,
+        "sha256": "f6fe1e85a92830d04ae5cbd5d974feedd911563fe970ebd681b2308393675438",
+        "size": 43908
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "GOLD_DRV.ZD2",
+        "read_seconds": 2.7439,
+        "sha256": "b219057feedf96cc90b0fabd9aa53cec404199d8e49b572f8b0ae4cafc7911a2",
+        "size": 31233
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "GRAYCOMP.ZD2",
+        "read_seconds": 1.7743,
+        "sha256": "9cb5fdf7bb7fd40bdbe7df6384ea6b890dc95809cc08c57202869a3d45f155c5",
+        "size": 17632
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "GTGEQ71U.ZD2",
+        "read_seconds": 1.7765,
+        "sha256": "0014b589819c91858e0f31e7d9da870a8a31de281ac6bd62440b1c749fc9488c",
+        "size": 17740
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "HALL.ZD2",
+        "read_seconds": 1.8024,
+        "sha256": "ca1ea970d0846f6212c5d4e81d967d70fb048cc99c89bd4df82c6014bf1261c4",
+        "size": 17933
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "HD_HALL.ZD2",
+        "read_seconds": 1.9504,
+        "sha256": "e3dedd65581510aab5a6bf27c64a97f59c75c56914de0f4da8871f46912c3625",
+        "size": 20904
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "HOTSPICE.ZD2",
+        "read_seconds": 2.0301,
+        "sha256": "85f3bf8613e0b446679f69e4d2f05c4d0007813e39ae0de66f4e0ad2c0655134",
+        "size": 22446
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "HPS.ZD2",
+        "read_seconds": 1.573,
+        "sha256": "5bd7ae20af28c0e77ce7c398f668f49725be6359e3393f975316f294cb3479ab",
+        "size": 15733
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "HW100_1U.ZD2",
+        "read_seconds": 4.3035,
+        "sha256": "8daf65778614fca89be1db28fca19e813891d61861cc1b8f17a1aa1c5bcf1cfc",
+        "size": 56206
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "HW4X12.ZD2",
+        "read_seconds": 2.8179,
+        "sha256": "591145fb315c6a3eef04cf5f83019ada68f5fe617798e5a4b166a5914677168e",
+        "size": 33574
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "LMT1176.ZD2",
+        "read_seconds": 2.4203,
+        "sha256": "17d057054d2c2699f463172c98c9637eca65300a61de5d6ed65015837a5a1ce8",
+        "size": 27394
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "MA2X12.ZD2",
+        "read_seconds": 2.7832,
+        "sha256": "c22246af4ccd63cfb4f98fd8f472c754eccef43b69f43aa68ac268e250c5495b",
+        "size": 33315
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "MACH301U.ZD2",
+        "read_seconds": 3.9026,
+        "sha256": "05fd4dfc1a47e8d00676838436a06ec23cc681492153477e44b6521cd2541838",
+        "size": 49770
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "MK1_1X12.ZD2",
+        "read_seconds": 2.7883,
+        "sha256": "68b9e4f23df3125da35a8ed7e14b1fa1fbafea9cbac539f8f7fca2ab66f77367",
+        "size": 34453
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "MODDELAY.ZD2",
+        "read_seconds": 1.6297,
+        "sha256": "1f140608ff2e1d49548621ffadbc96beafb580fb25a46ebca89b831928e7595e",
+        "size": 16541
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "MS19591U.ZD2",
+        "read_seconds": 3.6084,
+        "sha256": "f8fe8768b33ae3d2e208ab055ec43440daa85f17c8d43286a2a3674ff4359453",
+        "size": 46154
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "MS4X12.ZD2",
+        "read_seconds": 2.8029,
+        "sha256": "cb1c271e3d56031d79c265104d6127058b043806fa34d837bbb383f226830b4f",
+        "size": 33034
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "MS4X12GB.ZD2",
+        "read_seconds": 2.799,
+        "sha256": "decfe078071a0f2f0a047cd3c81eef7601b0b0f5bdf13f9df91fb82ca609edc7",
+        "size": 33650
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "MS800_1U.ZD2",
+        "read_seconds": 3.3274,
+        "sha256": "2ee9bf228dfa310c06538e58edf9c8c1b16c31133c3ad65c99edafd558272d92",
+        "size": 41158
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "NYC_MUFF.ZD2",
+        "read_seconds": 1.7291,
+        "sha256": "ab65892550b34bb128bc0c60906b08f7e7de6e76c84af38c6b7b988e03f27da5",
+        "size": 17440
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "OCTAVE.ZD2",
+        "read_seconds": 1.3411,
+        "sha256": "9a6b8cab72f421fd51bbd58ca7dcbbae7143c0168a304a1d88fc910c9dd65de2",
+        "size": 12133
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "ORG1201U.ZD2",
+        "read_seconds": 4.5583,
+        "sha256": "12c8c6fea29a1229e56765fd0d215398fd478aa2861f5a84d9c9d60694b73820",
+        "size": 59237
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "ORG_4X12.ZD2",
+        "read_seconds": 2.8334,
+        "sha256": "813d5b0608aaf4953a9885ccf028ff06a534b556add4ba6e39a8f82ce6c38602",
+        "size": 33366
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "PARAEQ.ZD2",
+        "read_seconds": 1.5595,
+        "sha256": "21540aad7fbc7c9f3aaff7851abadb47d2bf1c0a7e2aaa586cc00a07d928dc88",
+        "size": 15492
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "PHASER.ZD2",
+        "read_seconds": 1.5791,
+        "sha256": "586b0cda342e2fcde86470e1165c6a5d720df9e06c2b1c22c0e3cdf75fe71132",
+        "size": 15851
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "PITCHSHF.ZD2",
+        "read_seconds": 2.0279,
+        "sha256": "31a391f08e76e3849cc2c3848ec6e90c6f8afbc23a9924cb1c642125a9e8006b",
+        "size": 22357
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "PLATEREV.ZD2",
+        "read_seconds": 1.8875,
+        "sha256": "8acc2a82fa3fb00508acf5492839486e1272f61c6da7a6eadaefba5f91a4ec07",
+        "size": 20051
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "PPDLY_3S.ZD2",
+        "read_seconds": 1.6853,
+        "sha256": "1c18560b8d2c19e751b9113d144afbac3060ad06106f7caa830f9b4ca23b3e8f",
+        "size": 17054
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "RACKCOMP.ZD2",
+        "read_seconds": 1.7032,
+        "sha256": "86fe7b54ae6ab00e40d066223fb2572cc44e68120d086992d99c71e4af032d7d",
+        "size": 17444
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "RCBOOST.ZD2",
+        "read_seconds": 2.0025,
+        "sha256": "c1ea25b7b1d6b43527a7ae5128c7666ccc02fe17688fa6a9fd138a967ffa2051",
+        "size": 21931
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "RCT4X12.ZD2",
+        "read_seconds": 2.9178,
+        "sha256": "86f43c7f44d9408c8ce35516a391b0b742d2f1c8913050186bf29f6e1f54629b",
+        "size": 34769
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "RCTORG1U.ZD2",
+        "read_seconds": 4.5345,
+        "sha256": "6d4b412c2aaaa7abb63ff832947d85aebbbbd79cd896cf6971950f4db7d3a25f",
+        "size": 57111
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "REDCRUNC.ZD2",
+        "read_seconds": 2.0417,
+        "sha256": "56823af878579205c11255c1307b51c5fd3d67a6b16c05b9bcb6ab135dfd3d03",
+        "size": 21666
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "RNDMFLTR.ZD2",
+        "read_seconds": 1.7092,
+        "sha256": "82d42a81d326ff016d1901290a7acc999dc50f57c42d05ae0a99ca123b33afcf",
+        "size": 16860
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "ROOM.ZD2",
+        "read_seconds": 1.7773,
+        "sha256": "0126f8f9a0c071117af6fcbd47a8c99609ac8091427d6cd124362ba712f5f1b8",
+        "size": 17911
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "RVRSDL3S.ZD2",
+        "read_seconds": 1.7112,
+        "sha256": "9306cb635afff43f3162c840bb1d241192d20aae7c479c0aa8df8f49c4b3cbf7",
+        "size": 17150
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "SEQFLTR.ZD2",
+        "read_seconds": 1.9697,
+        "sha256": "8640d2e5ba9173103b142afefb676ec1bf9abfd964354dfd66c93aa546be9eea",
+        "size": 19674
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "SLWATK.ZD2",
+        "read_seconds": 2.3797,
+        "sha256": "1da3750d0188a7c8d0ff706de8664b98fe3192b2ff7591e8c73baaca13b7a22e",
+        "size": 26806
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "SOFTEC3S.ZD2",
+        "read_seconds": 2.3438,
+        "sha256": "053468113ae9a701ae96ba244e0e6fe2a24835fd6728783e358a074bdd7a183a",
+        "size": 25394
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "SPRING.ZD2",
+        "read_seconds": 1.8136,
+        "sha256": "5a45f46d318afb521d3d603cb7654249d4f02d74af26700996f886c294fc42fe",
+        "size": 18007
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "SQUEAK.ZD2",
+        "read_seconds": 2.2657,
+        "sha256": "35a0101fa2e4924c21a8ed706846f1797ce08a0ff3859f69dd4e7032bc169c22",
+        "size": 24661
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "STEREOCH.ZD2",
+        "read_seconds": 1.5513,
+        "sha256": "247d2c4863eeb9074890f094cfd7fdea9aee07b3fdde44133d9a8623d499fe00",
+        "size": 14993
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "SWEETDRV.ZD2",
+        "read_seconds": 2.507,
+        "sha256": "e11fef7f44eca36603df0aed5fcfbb221c2abd5cb05e2d01283a2681e7f31e12",
+        "size": 29241
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "TAPEECHO.ZD2",
+        "read_seconds": 1.6412,
+        "sha256": "6633606b4e4ab306ddb661d1a4c37cd8ab00df2e51707446511db54f985dc1cc",
+        "size": 17034
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "TREMOLO.ZD2",
+        "read_seconds": 2.3223,
+        "sha256": "0fc8997b4a41214e8b936976929ce12abc65a635e9680fba0c07508828cb341f",
+        "size": 27704
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "TS_DRIVE.ZD2",
+        "read_seconds": 1.7846,
+        "sha256": "6dcb800dbd23e8b0b7a6f7968175e6fe2e5940bf53697c266444b84cc99400f7",
+        "size": 18793
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "UK2X12.ZD2",
+        "read_seconds": 2.7502,
+        "sha256": "67a5b770799594260af111decd749683155d6edf4805cd148ab7d25794eda56c",
+        "size": 32849
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "UK30A_1U.ZD2",
+        "read_seconds": 3.2455,
+        "sha256": "3b457f080a774489d1aacf37522e781e50ba44296a8affd966938e2768abc98f",
+        "size": 40268
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "VIBRATO.ZD2",
+        "read_seconds": 1.5057,
+        "sha256": "28487a6f3fd782cc295587d13ccb9ecb2d27196877a88c193bf2d95e313a9530",
+        "size": 14868
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "VINFLNGR.ZD2",
+        "read_seconds": 1.6241,
+        "sha256": "a895a9049268d61daf0ae9c69187393852331ceed978bf052e20a5772790c16b",
+        "size": 16512
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "VIOLETDS.ZD2",
+        "read_seconds": 2.542,
+        "sha256": "f9b70ff53ebb5b466cba173a071c444e72a6dd0a241fd6c1ff22036184be7caf",
+        "size": 30710
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "XTSBLU1U.ZD2",
+        "read_seconds": 3.3948,
+        "sha256": "f07a3b6dbb1054d1019d30a456633b010b71b1413b085db3f8b0fd419a44e744",
+        "size": 43394
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "ZEN_DRV.ZD2",
+        "read_seconds": 2.2592,
+        "sha256": "069027ffcdef00bc239dd276c7f9b7d4fea373ab281bf28e1c7cdb59156295b1",
+        "size": 26107
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "ZNR.ZD2",
+        "read_seconds": 2.3141,
+        "sha256": "f3b177b1957ecce816bd76f9a2a7756ea1f65ad5cb371a4d9d9b80157d637265",
+        "size": 26307
+      },
+      {
+        "crc32_device_ok": true,
+        "name": "THEVIBE.ZD2",
+        "read_seconds": 1.4374,
+        "sha256": "cace73870907d952889e24db7e5c5c50f53f85ef1b85918aaac6f3d22d0e0314",
+        "size": 13933
+      }
+    ],
+    "listing_seconds": 1.3012
+  },
+  "identity": {
+    "firmware": "2.00",
+    "model": "G1 Four",
+    "model_bytes": "0C 00",
+    "reply_hex": "7E 00 06 02 52 6E 00 0C 00 32 2E 30 30"
+  },
+  "oracle": {
+    "device_only": [
+      "Clap.raw",
+      "ClapAmb.raw",
+      "Click.raw",
+      "G_OUT_EQ.BDL",
+      "HHC.raw",
+      "HHCAmb.raw",
+      "HHF.raw",
+      "HHO.raw",
+      "HHOAmb.raw",
+      "Kik1.raw",
+      "Kik2.raw",
+      "KikAmb.raw",
+      "Ride.raw",
+      "Rim.raw",
+      "RimAmb.raw",
+      "Snr1.raw",
+      "Snr2.raw",
+      "Snr3.raw",
+      "Snr4.raw",
+      "SnrAmb.raw",
+      "Tamb.raw",
+      "TomF.raw",
+      "TomFAmb.raw",
+      "TomH.raw",
+      "TomL.raw"
+    ],
+    "oracle_only": [
+      "AC_370.ZD2",
+      "AG750.ZD2",
+      "AIR.ZD2",
+      "AMBIENCE.ZD2",
+      "ANA234CH.ZD2",
+      "ANALOGDL.ZD2",
+      "APANDL3S.ZD2",
+      "APANDLY.ZD2",
+      "AUTOPAN.ZD2",
+      "B15N.ZD2",
+      "BASSDRV.ZD2",
+      "BA_GEQ.ZD2",
+      "BENDCHO.ZD2",
+      "BGMK3_1U.ZD2",
+      "BG_GRID.ZD2",
+      "BG_MK1.ZD2",
+      "BG_MK3.ZD2",
+      "BLACKOPT.ZD2",
+      "BMAN100.ZD2",
+      "BYPASS.ZD2",
+      "CHAMBER.ZD2",
+      "CHORUS.ZD2",
+      "CHURCH.ZD2",
+      "CRN_TRI.ZD2",
+      "CRY.ZD2",
+      "DARK_PRE.ZD2",
+      "DELAY.ZD2",
+      "DETUNE.ZD2",
+      "DI_PLUS.ZD2",
+      "DUALDIGD.ZD2",
+      "DUALDL3S.ZD2",
+      "DUOPHA1U.ZD2",
+      "DUO_PHA.ZD2",
+      "DZ_DRV.ZD2",
+      "EARLYREF.ZD2",
+      "EB_HD360.ZD2",
+      "EGFILTER.ZD2",
+      "EXCITER.ZD2",
+      "FDMA2X12.ZD2",
+      "FDMSTR1U.ZD2",
+      "FD_BMAN.ZD2",
+      "FD_DLXR.ZD2",
+      "FD_MSTR.ZD2",
+      "FD_TWINR.ZD2",
+      "FLTRDLY.ZD2",
+      "GATE_REV.ZD2",
+      "GT_GEQ.ZD2",
+      "GT_GEQ1U.ZD2",
+      "GT_GEQ_7.ZD2",
+      "HOLDDLY.ZD2",
+      "HOLDVERB.ZD2",
+      "HW100.ZD2",
+      "ICEDLY3S.ZD2",
+      "ICE_DLY.ZD2",
+      "JTM45OS.ZD2",
+      "KICKFLNG.ZD2",
+      "LFO_FLTR.ZD2",
+      "LOOPROLL.ZD2",
+      "LOWPASSF.ZD2",
+      "LPROLL3S.ZD2",
+      "MATCH_30.ZD2",
+      "MK3_1X12.ZD2",
+      "MONOPITC.ZD2",
+      "MS1959.ZD2",
+      "MS45OS1U.ZD2",
+      "MS4X12AL.ZD2",
+      "MS800.ZD2",
+      "MTLWRLD.ZD2",
+      "MUTESW.ZD2",
+      "N_GATE.ZD2",
+      "OCTFUZZ.ZD2",
+      "OPTCOMP.ZD2",
+      "ORG_120.ZD2",
+      "OSC_ECHO.ZD2",
+      "OUT_BST.ZD2",
+      "PARTICLE.ZD2",
+      "PDL_DLY.ZD2",
+      "PDL_ROT.ZD2",
+      "PHASDL1U.ZD2",
+      "PHASEDLY.ZD2",
+      "PITCHDLY.ZD2",
+      "PTCHDL3S.ZD2",
+      "P_P_DLY.ZD2",
+      "RCT_ORG.ZD2",
+      "REDCRBST.ZD2",
+      "RESONANC.ZD2",
+      "REVERSED.ZD2",
+      "RINGMOD.ZD2",
+      "SLAPBKD.ZD2",
+      "SLATDL3S.ZD2",
+      "SLICER.ZD2",
+      "SLPBKD3S.ZD2",
+      "SLWATKDL.ZD2",
+      "SOFTECHO.ZD2",
+      "SPC_HOLE.ZD2",
+      "SPTBOOST.ZD2",
+      "STEP.ZD2",
+      "STGTGE1U.ZD2",
+      "STONEPHA.ZD2",
+      "ST_B_GEQ.ZD2",
+      "ST_GT_GE.ZD2",
+      "SUPERCHO.ZD2",
+      "SVT.ZD2",
+      "SWR400.ZD2",
+      "TAPEECH3.ZD2",
+      "TB_MK15.ZD2",
+      "TE400SMX.ZD2",
+      "TPEC3_3S.ZD2",
+      "TS_BOOST.ZD2",
+      "UK30A.ZD2",
+      "UPOCTBST.ZD2",
+      "WRPPHASE.ZD2",
+      "XTACYBLU.ZD2",
+      "Z_SYN.ZD2"
+    ],
+    "source": "/Users/andrii/Projects/zoom-g1four/firmware/extracted/FS.bin"
+  },
+  "patch_bank": {
+    "bank_size": 10,
+    "count": 50,
+    "patch_size": 760
+  },
+  "patches": [
+    {
+      "crc32_device_ok": true,
+      "location": 1,
+      "read_seconds": 0.012,
+      "sha256": "2ea1a55f682341be30f05d9b6da1c3970f52fa048c28f07b7caba2dcf9d415ed",
+      "size": 760
+    },
+    {
+      "crc32_device_ok": true,
+      "location": 2,
+      "read_seconds": 0.0126,
+      "sha256": "2244eb33d3343d3699c2e0e44491d08b9b762f643e267865bc55b8e3c62d24b4",
+      "size": 760
+    },
+    {
+      "crc32_device_ok": true,
+      "location": 3,
+      "read_seconds": 0.0126,
+      "sha256": "37a8d80bf6c980046e1bc79a4df067d3d032cfd032ce8553f7ecb032abde7e53",
+      "size": 760
+    },
+    {
+      "crc32_device_ok": true,
+      "location": 4,
+      "read_seconds": 0.0126,
+      "sha256": "13fa5ddab82adf85fbe1f29730ee1c83e40294341f4ee119663db5e24ea39fda",
+      "size": 760
+    },
+    {
+      "crc32_device_ok": true,
+      "location": 5,
+      "read_seconds": 0.0126,
+      "sha256": "cac263db9f2a1df312f63958e5ea8a8eb1bd2f93fab75e9d64065422b8804719",
+      "size": 760
+    },
+    {
+      "crc32_device_ok": true,
+      "location": 6,
+      "read_seconds": 0.0126,
+      "sha256": "d3c55daef256c39a4d93baafa6112ba8427a3f1f345bc197f68b2340f29ae795",
+      "size": 760
+    },
+    {
+      "crc32_device_ok": true,
+      "location": 7,
+      "read_seconds": 0.0126,
+      "sha256": "e244d3b2de39c0cf093e80972cd211703186cacf36313a79761596b8ab0fef49",
+      "size": 760
+    },
+    {
+      "crc32_device_ok": true,
+      "location": 8,
+      "read_seconds": 0.0126,
+      "sha256": "ed613ad9da0b38dad0ba415f0f6d8449a2fbccd0df4b854443f9d52f17ea994b",
+      "size": 760
+    },
+    {
+      "crc32_device_ok": true,
+      "location": 9,
+      "read_seconds": 0.0126,
+      "sha256": "15e07467d596b2623b2160d371beae2b219e51402f4943d4d2b9ac2212361d69",
+      "size": 760
+    },
+    {
+      "crc32_device_ok": true,
+      "location": 10,
+      "read_seconds": 0.0126,
+      "sha256": "901547ebf0baa93be84af463ec041942dfa0af01446ef38b3a8404d6dcc93e61",
+      "size": 760
+    },
+    {
+      "crc32_device_ok": true,
+      "location": 11,
+      "read_seconds": 0.0126,
+      "sha256": "66f35c938ac673ce162ef033e9ab146ddcdee7d79b2b34213562103c2a1be583",
+      "size": 760
+    },
+    {
+      "crc32_device_ok": true,
+      "location": 12,
+      "read_seconds": 0.0126,
+      "sha256": "360b342a70fed605eb7608b267d6ab1aabe30a7d0443bdfd7886764091e178a6",
+      "size": 760
+    },
+    {
+      "crc32_device_ok": true,
+      "location": 13,
+      "read_seconds": 0.0126,
+      "sha256": "d955c4dac3b5807c3c871f06efbdc84960ecca72d29ad3c8e14f479d8f6fa2d2",
+      "size": 760
+    },
+    {
+      "crc32_device_ok": true,
+      "location": 14,
+      "read_seconds": 0.0127,
+      "sha256": "dd1c38e5db717490e4ede8f419d8b3a68d7ed5d488134db50307e4a3a88ca044",
+      "size": 760
+    },
+    {
+      "crc32_device_ok": true,
+      "location": 15,
+      "read_seconds": 0.0126,
+      "sha256": "de33c5e26992da5dfb2b44895d1f2434c065d74d897517a575b4483fc2ac4524",
+      "size": 760
+    },
+    {
+      "crc32_device_ok": true,
+      "location": 16,
+      "read_seconds": 0.0126,
+      "sha256": "2bb01aa4ae9c9c4a8b54f6b8331e7895f1540d1e28e28731f424703ee5b76805",
+      "size": 760
+    },
+    {
+      "crc32_device_ok": true,
+      "location": 17,
+      "read_seconds": 0.0108,
+      "sha256": "c9c7a88ecf7d3d3b8baec9fc0624efebddfbae683b7f48deceea3590725e3be2",
+      "size": 760
+    },
+    {
+      "crc32_device_ok": true,
+      "location": 18,
+      "read_seconds": 0.0126,
+      "sha256": "02e83179d9aa5168518b428bdc673356e6cd9c8d53139e5ec18fdc78849c3e00",
+      "size": 760
+    },
+    {
+      "crc32_device_ok": true,
+      "location": 19,
+      "read_seconds": 0.0113,
+      "sha256": "1fa46a17337cbc82be6d8136d51d63abfaf036d99725f892a4232ed333789b26",
+      "size": 760
+    },
+    {
+      "crc32_device_ok": true,
+      "location": 20,
+      "read_seconds": 0.0127,
+      "sha256": "22e16ab1cb69a0f137d09847485b95f61dcd4e5419119998b915246d0fac11ad",
+      "size": 760
+    },
+    {
+      "crc32_device_ok": true,
+      "location": 21,
+      "read_seconds": 0.0126,
+      "sha256": "7e047bb02c1c3375be64873dfc4ccbfa84be904738e2e408a455676688df05ed",
+      "size": 760
+    },
+    {
+      "crc32_device_ok": true,
+      "location": 22,
+      "read_seconds": 0.0126,
+      "sha256": "49415a5e1ef83e5100712e15afca2cf5993c9aa6adeae8a2722705457afaadaa",
+      "size": 760
+    },
+    {
+      "crc32_device_ok": true,
+      "location": 23,
+      "read_seconds": 0.0115,
+      "sha256": "d2161eb02463195545bc4fb4fa41f0beaf97f940234467719ddb89d689ea6d28",
+      "size": 760
+    },
+    {
+      "crc32_device_ok": true,
+      "location": 24,
+      "read_seconds": 0.0124,
+      "sha256": "97d839179ae182d829520d86819e42b1925ecc7229e0be1a353a0b3918b64ffc",
+      "size": 760
+    },
+    {
+      "crc32_device_ok": true,
+      "location": 25,
+      "read_seconds": 0.0104,
+      "sha256": "b06a2223e4a971bdf98c1853c1306ee2d33665ba7d6e60dd5961084f50236c9a",
+      "size": 760
+    },
+    {
+      "crc32_device_ok": true,
+      "location": 26,
+      "read_seconds": 0.0126,
+      "sha256": "2f66f0b18efc589977ffb244a5a40bed1c67cd287ab47b5b0834d4f727024cdd",
+      "size": 760
+    },
+    {
+      "crc32_device_ok": true,
+      "location": 27,
+      "read_seconds": 0.0126,
+      "sha256": "d939f2f616a31b882070937633631ccba132e607f40019c85f557fcc2fbcc42b",
+      "size": 760
+    },
+    {
+      "crc32_device_ok": true,
+      "location": 28,
+      "read_seconds": 0.0104,
+      "sha256": "a07befd09dfa64063865956a846e39b7fe8787ed7e56d689c00757edc0ebaea8",
+      "size": 760
+    },
+    {
+      "crc32_device_ok": true,
+      "location": 29,
+      "read_seconds": 0.0126,
+      "sha256": "4c98b3baa228e1147ebc27ea62bc43a548e1e4179fd9ca68ec0facf79b707133",
+      "size": 760
+    },
+    {
+      "crc32_device_ok": true,
+      "location": 30,
+      "read_seconds": 0.0126,
+      "sha256": "01a978aa6ed635e9d1c63ecb752953809110b42ac8c6d441be6abc79cbf98039",
+      "size": 760
+    },
+    {
+      "crc32_device_ok": true,
+      "location": 31,
+      "read_seconds": 0.011,
+      "sha256": "7838d9e98a3597fc7c8d2795fbc213f1e2910a2a4b48db35cb12542a00824851",
+      "size": 760
+    },
+    {
+      "crc32_device_ok": true,
+      "location": 32,
+      "read_seconds": 0.0126,
+      "sha256": "5f22b9b73477fa530a58be60c5bf1a7ec8a9549b2b52e8dfd4d34987bd6c0e7e",
+      "size": 760
+    },
+    {
+      "crc32_device_ok": true,
+      "location": 33,
+      "read_seconds": 0.0126,
+      "sha256": "a68cf1409b90a0540ff18c4bc0343ee6e8e47c90f483c001dd0140f30b722e0d",
+      "size": 760
+    },
+    {
+      "crc32_device_ok": true,
+      "location": 34,
+      "read_seconds": 0.0126,
+      "sha256": "60a714413ee51d6c14f34060298ccd973f2b5557d86aa98e82a5bdd75e784c56",
+      "size": 760
+    },
+    {
+      "crc32_device_ok": true,
+      "location": 35,
+      "read_seconds": 0.0126,
+      "sha256": "ccbf96ede7c73da0cf4a16c838a42bad8c1f36e33fa47ee8ddae3c26726b5bf8",
+      "size": 760
+    },
+    {
+      "crc32_device_ok": true,
+      "location": 36,
+      "read_seconds": 0.0127,
+      "sha256": "1db95fce050a274ad6fdd2691bc7d7f2777da0438c22f86db5628b2a8fc53c8a",
+      "size": 760
+    },
+    {
+      "crc32_device_ok": true,
+      "location": 37,
+      "read_seconds": 0.0126,
+      "sha256": "82fdc07598f89688008977b2223e6fe8c3cd521a791c6bcc7fdf8e485984fbbf",
+      "size": 760
+    },
+    {
+      "crc32_device_ok": true,
+      "location": 38,
+      "read_seconds": 0.0126,
+      "sha256": "baca6da092386ea84d30d7d07f39c371492df6e3d5011cd0e119fe47725a9e5f",
+      "size": 760
+    },
+    {
+      "crc32_device_ok": true,
+      "location": 39,
+      "read_seconds": 0.0126,
+      "sha256": "1536e0067c5245ea204c84c02587d591a5c7241e886b7b82ca8d71ba7fe145b0",
+      "size": 760
+    },
+    {
+      "crc32_device_ok": true,
+      "location": 40,
+      "read_seconds": 0.0126,
+      "sha256": "6d8e74f99a5ae532910eb643bfcf6d30c40f38738f97c2570f1e841c0f1ad0c0",
+      "size": 760
+    },
+    {
+      "crc32_device_ok": true,
+      "location": 41,
+      "read_seconds": 0.0126,
+      "sha256": "2ec06be711520af50e6dbd90e0b1292397e2920694ecd8bef57f9166493a889b",
+      "size": 760
+    },
+    {
+      "crc32_device_ok": true,
+      "location": 42,
+      "read_seconds": 0.0126,
+      "sha256": "9ead178b59ff77c54606b1cb1e5d61c53f83437fa56b57b9cda06ef5112e39a6",
+      "size": 760
+    },
+    {
+      "crc32_device_ok": true,
+      "location": 43,
+      "read_seconds": 0.0126,
+      "sha256": "6b9ca103a1bb1126f23bf8a82b35685c133879d88946d9725b3d4266fb2500ce",
+      "size": 760
+    },
+    {
+      "crc32_device_ok": true,
+      "location": 44,
+      "read_seconds": 0.0121,
+      "sha256": "6b9ca103a1bb1126f23bf8a82b35685c133879d88946d9725b3d4266fb2500ce",
+      "size": 760
+    },
+    {
+      "crc32_device_ok": true,
+      "location": 45,
+      "read_seconds": 0.0128,
+      "sha256": "6b9ca103a1bb1126f23bf8a82b35685c133879d88946d9725b3d4266fb2500ce",
+      "size": 760
+    },
+    {
+      "crc32_device_ok": true,
+      "location": 46,
+      "read_seconds": 0.0126,
+      "sha256": "4b15afba86952e83dda264fbe9d439c45240e3ba9dac2ee70f57f430172c0377",
+      "size": 760
+    },
+    {
+      "crc32_device_ok": true,
+      "location": 47,
+      "read_seconds": 0.0126,
+      "sha256": "6b9ca103a1bb1126f23bf8a82b35685c133879d88946d9725b3d4266fb2500ce",
+      "size": 760
+    },
+    {
+      "crc32_device_ok": true,
+      "location": 48,
+      "read_seconds": 0.0126,
+      "sha256": "6b9ca103a1bb1126f23bf8a82b35685c133879d88946d9725b3d4266fb2500ce",
+      "size": 760
+    },
+    {
+      "crc32_device_ok": true,
+      "location": 49,
+      "read_seconds": 0.0126,
+      "sha256": "6b9ca103a1bb1126f23bf8a82b35685c133879d88946d9725b3d4266fb2500ce",
+      "size": 760
+    },
+    {
+      "crc32_device_ok": true,
+      "location": 50,
+      "read_seconds": 0.0127,
+      "sha256": "6b9ca103a1bb1126f23bf8a82b35685c133879d88946d9725b3d4266fb2500ce",
+      "size": 760
+    }
+  ],
+  "schema_version": 1,
+  "state_digest": "83d9f8a31176623b56373e6aec1b90045914585546836b4ca75f2eb88515c7f1",
+  "timings": {
+    "fs_total_seconds": 243.5806,
+    "patch_total_seconds": 0.6193,
+    "total_seconds": 245.6792
+  }
+}
