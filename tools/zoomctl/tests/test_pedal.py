@@ -155,3 +155,91 @@ def test_patch_download_truncated_reply_raises():
 
     with pytest.raises(PedalError, match="truncated patch reply"):
         pedal.patch_download(location=1, bsize=10)
+
+
+def _file_list_reply(name: str):
+    return sysex([0x52, 0x00, 0x6E, 0x60, 0x04, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                 + list(name.encode()) + [0])
+
+
+def test_file_wild_returns_name_then_empty_at_end():
+    transport = FakeTransport([_file_list_reply("ZEN_DRV.ZD2"), sysex([0x52, 0x00, 0x6E, 0x60, 0x05])])
+    pedal = ZoomPedal(transport)
+
+    assert pedal.file_wild(first=True) == "ZEN_DRV.ZD2"
+    assert pedal.file_wild(first=False) == ""
+    assert list(transport.sent[0].data[:7]) == [0x52, 0x00, 0x6E, 0x60, 0x25, 0x00, 0x00]
+    assert list(transport.sent[1].data[:7]) == [0x52, 0x00, 0x6E, 0x60, 0x26, 0x00, 0x00]
+    assert list(transport.sent[0].data[7:]) == [ord("*"), 0]
+
+
+def test_file_check_true_when_last_five_bytes_zero():
+    transport = FakeTransport([
+        sysex([0x52, 0x00, 0x6E, 0x60, 0x25]),
+        sysex([0x52, 0x00, 0x6E, 0x60, 0x04, 0, 0, 0, 0, 0]),
+        sysex([0x52, 0x00, 0x6E, 0x60, 0x27]),
+    ])
+    pedal = ZoomPedal(transport)
+
+    assert pedal.file_check("FLST_SEQ.ZT2") is True
+
+
+def test_file_check_false_when_last_five_bytes_nonzero():
+    transport = FakeTransport([
+        sysex([0x52, 0x00, 0x6E, 0x60, 0x25]),
+        sysex([0x52, 0x00, 0x6E, 0x60, 0x04, 1, 2, 3, 4, 5]),
+        sysex([0x52, 0x00, 0x6E, 0x60, 0x27]),
+    ])
+    pedal = ZoomPedal(transport)
+
+    assert pedal.file_check("MISSING.ZD2") is False
+
+
+def test_file_check_truncated_reply_raises():
+    transport = FakeTransport([
+        sysex([0x52, 0x00, 0x6E, 0x60, 0x25]),
+        sysex([0x52, 0x00, 0x6E, 0x60]),
+        sysex([0x52, 0x00, 0x6E, 0x60, 0x27]),
+    ])
+    pedal = ZoomPedal(transport)
+
+    with pytest.raises(PedalError, match="truncated file check reply"):
+        pedal.file_check("X.ZD2")
+
+
+def test_file_download_reads_blocks_until_empty_and_closes():
+    data = b"effect-binary"
+    block = [0x52, 0x00, 0x6E, 0x60, 0x04, 0, 0, 0]
+    block += [len(data) & 0x7F, (len(data) >> 7) & 0x7F]
+    block += list(pack_7bit(data)) + list(crc32_5(data))
+    end = [0x52, 0x00, 0x6E, 0x60, 0x04, 0, 0, 0, 0, 0]
+    ack = [0x52, 0x00, 0x6E, 0x60, 0x05]
+    transport = FakeTransport([
+        sysex([0x52, 0x00, 0x6E, 0x60, 0x20]),  # open
+        sysex(ack), sysex([0x52, 0x00, 0x6E, 0x60, 0x22]), sysex(block),
+        sysex(ack), sysex([0x52, 0x00, 0x6E, 0x60, 0x22]), sysex(end),
+        sysex([0x52, 0x00, 0x6E, 0x60, 0x21]),  # close
+        sysex([0x52, 0x00, 0x6E, 0x60, 0x09]),
+    ])
+    pedal = ZoomPedal(transport)
+
+    result = pedal.file_download("X.ZD2")
+
+    assert result == data
+    assert list(transport.sent[0].data) == [0x52, 0x00, 0x6E, 0x60, 0x20, 0x02, 0, 0, 0, 0, 0, 0, 0, 0, 0, ord("X"), ord("."), ord("Z"), ord("D"), ord("2"), 0]
+
+
+def test_file_download_truncated_block_raises():
+    data = b"0123456789abcdef"
+    block = [0x52, 0x00, 0x6E, 0x60, 0x04, 0, 0, 0]
+    block += [len(data) & 0x7F, (len(data) >> 7) & 0x7F]
+    block += list(pack_7bit(data))[:3]
+    ack = [0x52, 0x00, 0x6E, 0x60, 0x05]
+    transport = FakeTransport([
+        sysex([0x52, 0x00, 0x6E, 0x60, 0x20]),
+        sysex(ack), sysex([0x52, 0x00, 0x6E, 0x60, 0x22]), sysex(block),
+    ])
+    pedal = ZoomPedal(transport)
+
+    with pytest.raises(PedalError, match="truncated file reply"):
+        pedal.file_download("X.ZD2")
