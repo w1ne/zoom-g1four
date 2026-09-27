@@ -9,6 +9,7 @@ from pathlib import Path
 from . import manifest as manifest_module
 from .oracle import compare_names, extract_names_from_path
 from .pedal import PedalError
+from .transport import TransportError
 
 
 @dataclass
@@ -34,8 +35,9 @@ def run_backup(pedal, out_dir: Path, manifests_dir: Path, oracle_path: Path | No
 
     identity = pedal.identity()
 
-    pedal.pcmode_on()
+    backup_error = None
     try:
+        pedal.pcmode_on()
         count, patch_size, bank_size = pedal.patch_check()
 
         patch_total_start = time.perf_counter()
@@ -87,8 +89,15 @@ def run_backup(pedal, out_dir: Path, manifests_dir: Path, oracle_path: Path | No
                 }
             )
         fs_total_seconds = time.perf_counter() - fs_total_start
+    except BaseException as error:
+        backup_error = error
+        raise
     finally:
-        pedal.pcmode_off()
+        try:
+            pedal.pcmode_off()
+        except (PedalError, TransportError):
+            if backup_error is None:
+                raise
 
     oracle = {"source": None, "device_only": [], "oracle_only": []}
     if oracle_path is not None and Path(oracle_path).is_file():

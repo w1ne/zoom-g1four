@@ -116,3 +116,34 @@ def test_run_backup_rejects_unsafe_device_names(tmp_path):
 
     with pytest.raises(PedalError, match="unsafe file name"):
         run_backup(pedal, out_dir=tmp_path / "backups", manifests_dir=tmp_path / "manifests")
+
+    assert list(pedal.transport.sent[-1].data) == [0x52, 0x00, 0x6E, 0x53]
+    assert not (tmp_path / "backups").exists()
+
+
+def test_run_backup_attempts_pcmode_off_when_pcmode_on_fails(tmp_path):
+    from tools.zoomctl.pedal import ZoomPedal
+    from tools.zoomctl.transport import TransportError
+
+    class FailingTransport(FakeTransport):
+        def __init__(self, responses, fail_on_send_number):
+            super().__init__(responses)
+            self.fail_on_send_number = fail_on_send_number
+
+        def send(self, message):
+            super().send(message)
+            if len(self.sent) == self.fail_on_send_number:
+                raise TransportError("simulated link failure")
+
+    responses = [
+        _identity_reply(),                    # send 1: identity
+        sysex([0x52, 0x00, 0x6E, 0x53]),      # reply to best-effort pcmode off (send 3)
+    ]
+    transport = FailingTransport(responses, fail_on_send_number=2)
+    pedal = ZoomPedal(transport)
+
+    with pytest.raises(TransportError, match="simulated link failure"):
+        run_backup(pedal, out_dir=tmp_path / "backups", manifests_dir=tmp_path / "manifests")
+
+    assert list(transport.sent[-1].data) == [0x52, 0x00, 0x6E, 0x53]
+    assert not (tmp_path / "backups").exists()
