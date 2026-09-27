@@ -4,8 +4,8 @@ Reverse engineering and open-firmware effort for the **Zoom G1 Four** guitar
 multi-effects pedal (and relatives: G1X/B1/B1X/A1 Four, board PCB-0993-02).
 
 Target: eventually run custom/open-source firmware. Strategy: a software-first
-ladder — extract the official firmware, capture and decide open questions,
-back up everything, get ground truth on the flash, then run self-compiled DSP
+ladder — extract the official firmware, back up everything, capture and decide
+open questions, get ground truth on the flash, then run self-compiled DSP
 effects, then patched firmware, then assess a full replacement.
 
 Read `docs/superpowers/specs/2026-09-27-zoom-g1four-design.md` for the design and
@@ -23,21 +23,21 @@ Read `docs/superpowers/specs/2026-09-27-zoom-g1four-design.md` for the design an
 
 ## Phase status
 
-| Phase | Goal | Status |
-|---|---|---|
-| P0 | Extract official v2.00 updater into canonical bins | not started |
-| P0.5 | Capture USB sessions, decide open questions (E1–E6) | not started |
-| P1a | Read-only patch/FS backup (write gate stays closed) | not started |
-| P2 | 4 MB flash dump, memory map, tested restore path (opens write gate) | not started |
-| P3a | No-op write, install path, modified stock effect audible | not started |
-| P3b | Self-compiled C674x effect audible | not started |
-| P4a | Zero-change repacked updater boots | not started |
-| P4b | String-patched `Main.bin` boots | not started |
-| P5 | Clean-room firmware go/no-go | not started |
+| Phase | Goal | Milestone | Status |
+|---|---|---|---|
+| P0 | Extract official v2.00 updater into canonical bins | M0 | not started |
+| P1 | Read-only patch/FS backup (required before any write) | M1 | not started |
+| P2 | Capture USB sessions, decide open questions (E1-alt/E1–E6) | M2 | not started |
+| P3 | 4 MB flash dump, memory map, tested restore (opens write gate) | M3 | not started |
+| P4a | No-op write, install path, modified stock effect audible | M4a | not started |
+| P4b | Self-compiled C674x effect audible | M4b | not started |
+| P5a | Zero-change repacked updater boots | M5a | not started |
+| P5b | String-patched `Main.bin` boots | M5b | not started |
+| P6 | Clean-room firmware go/no-go | M6 | not started |
 
 ## Safety
 
-No device writes before M2. The only exception is one official same-version
-reflash as part of USB capture (it is the vendor recovery procedure itself).
-Filesystem damage on this model is not recoverable by official re-flash. See
-`docs/recovery.md`.
+No device writes before M3. The only exception is the E1 official same-version
+reflash in P2, which requires the M1 backup first. Filesystem damage on this
+model is not recoverable by official re-flash (unless E1 proves the updater
+writes `FS.bin`). See `docs/recovery.md`.

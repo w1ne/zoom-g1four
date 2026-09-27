@@ -1,21 +1,23 @@
 # Zoom G1 Four — Open Firmware Project: Design
 
 Date: 2026-09-27
-Status: Revised after adversarial review; provisional pending P0.5 findings
+Status: Revision 2 — adversarial review + verification fixes applied; provisional
+pending P2 findings
 Repo: `/Users/andrii/Projects/zoom-g1four`
-Supersedes: initial design of the same date (commits 493ebcf, 03ddc81)
+Supersedes: Revision 1 (commits 493ebcf, 03ddc81) and revision 2 draft (fe090b9).
+Phase numbers were renumbered for strict dependency order.
 
 ## Goal
 
 Make it possible to run custom firmware on a Zoom G1 Four through a software-first
-ladder of phases. "Open source firmware" is the end goal; phases P0–P4 build the
+ladder of phases. "Open source firmware" is the end goal; phases P0–P5 build the
 capability and evidence needed to get there without destroying the device.
 
 ## Non-goals (for now)
 
-- Clean-room firmware rewrite during P0–P4 (assessed at P5).
+- Clean-room firmware rewrite during P0–P5 (assessed at P6).
 - JTAG bring-up on the TI C6745 (escape hatch only, no plan).
-- Hardware modification except where a phase explicitly requires it (P2).
+- Hardware modification except where a phase explicitly requires it (P3).
 
 ## Validated context
 
@@ -28,8 +30,7 @@ Target device (live-verified this session):
   (`0F 00`), GCE-3 (`10 00`). Model is discriminated via SysEx identity, never
   by PID. [V]
 - Main board PCB-0993-02, shared with A1/B1 Four. **DSP: TI TMS320C6745DPTP3**
-  (C674x). **Flash: MX25L3233F**, 4 MB SPI NOR. [V for the dump thread /
-  single-source; codec "AC3101i" unverified]
+  (C674x). **Flash: MX25L3233F**, 4 MB SPI NOR. [U — one primary dump thread]
 - All control (patches, effects, firmware update) is **USB-MIDI SysEx**. [V]
 - Effects are `ZDLF`-wrapped **TI C6000 ELF** binaries for the C6745. [V]
 - Custom DSP code compiled with TI C6000 tools runs on sibling MS-70CDR. [V]
@@ -71,7 +72,7 @@ zoom-g1four/
     zoomctl/                     # CLI: identity, mode, backup, gated writes
     extract_updater/             # updater -> canonical bins
     repack_updater/              # bins -> updater container + diffs
-    zd2wrap/                     # ELF -> ZDLF wrapper with CRCs (P3b)
+    zd2wrap/                     # ELF -> ZDLF wrapper with CRCs (P4b)
     capture/                     # USB capture scripts/notes per host
   effects/
     zd2/                         # effect sources, ABI.md, Dockerfile.build
@@ -87,7 +88,7 @@ Components (one job each):
 | `repack_updater` | rebuild updater from bins, emit byte-diff report; zero-change round-trip must be byte-identical | `extract_updater` parser |
 | `zoomctl` | all pedal I/O over USB-MIDI SysEx: identity, mode detection, read-only backup, gated writes | mido (verified working) |
 | `tools/capture` | documented USB capture procedures for supported hosts | Linux/Windows capture host |
-| flash procedure | chip-off MX25L3233F dump/restore with CH341A 3.3V + flashrom on Linux | hardware, P2 |
+| flash procedure | chip-off MX25L3233F dump/restore with CH341A 3.3V + flashrom on Linux | hardware, P3 |
 | `zd2wrap` | wrap/unwrap ZDLF, CRC computation, metadata | stock ZD2 corpus |
 | `effects/zd2` | C sources -> pinned TI C6000 CGT in pinned x86_64 container -> ELF | myTI account, Docker/colima |
 | `analysis/main-bin` | dis6x/objdump mapping, patch diffs | CGT toolchain |
@@ -103,62 +104,82 @@ Fetch official v2.00 packages, verify hash, implement the container parser
 `FS.bin`, `Preset.bin`, `MAIN_INFO.bin` + `SHA256SUMS`. Windows vs Mac payloads
 must match; mismatch = abort, write diff report, investigate before proceeding.
 Parser round-trip (extract -> repack) must be byte-identical. `FS.bin` file list
-becomes the completeness oracle for the P1a backup. Deliverable: **M0**.
+becomes the completeness oracle for the P1 backup. Deliverable: **M0**.
 
-**P0.5 — Capture and Decide (recon).**
-Runs before any write (sole exception below) and before detailed P2–P4
-planning. All results go into a decision table in `docs/research/`.
-
-- **E1 Update-session capture.** On a capture-capable host (Linux VM with USB
-  passthrough, Windows + USBPcap, or other Linux box), run the official v2.00
-  updater once, same version. This is the *only* device write allowed before
-  M2, because it is the vendor recovery procedure itself and is documented as
-  retryable. Capture full traffic; analyze opcode sequence, whether `FS.bin`
-  bytes are transferred and to which address, update-mode descriptors/identity,
-  and whether any read opcode exists.
-- **E2 Updater portability.** Confirm which hosts can execute the official
-  Mac/Windows updater; decide the P4 flashing environment (vendor updater,
-  Wine, or native flasher built from E1 captures).
-- **E3 Read-path probe.** Test only opcodes evidenced by E1. No blind opcode
-  scanning in update mode.
-- **E4 Audio routing matrix.** In normal mode (no writes), measure: physical
-  input -> USB record (expected FX path), USB playback -> record (loopback?),
-  sample rates, channel mapping, latency. Decide the P3 test fixture and
-  tolerances.
-- **E5 Zero-change repack round-trip.** Host-side: repack extracted bins,
-  assert byte-identical to original updater.
-- **E6 Mode detection.** Record identity/descriptors in normal vs update mode;
-  define `zoomctl mode` expectations.
-
-Exit criteria: decision table complete; every [U] claim that gates a milestone
-is either verified or has a scheduled experiment with a decision rule.
-Deliverable: **M0.5**.
-
-**P1a — Backup (read-only).**
+**P1 — Backup (read-only, no device writes).**
 `zoomctl backup`: identity + firmware version; all user patches; full FS listing
 and every FS file read back with `~CRC`; artifacts + manifest per
 `backups/manifests/SCHEMA.md` with SHA256s. Cross-check against the `FS.bin`
 oracle; report differences. Measure and record backup/restore transfer times
-over full-speed SysEx. Deliverable: **M1**.
+over full-speed SysEx. Deliverable: **M1**. This must complete before any write
+of any kind, including E1.
 
-**P2 — Ground truth.**
+**P2 — Capture and Decide (recon).**
+Runs after M1. E1 is the only write permitted before M3 and must pass the
+flashing preflight checklist in `docs/recovery.md`. All results go into a
+decision table in `docs/research/`. Decision rules are part of each experiment.
+
+- **E1-alt Static updater analysis (no device).** Disassemble/strings the
+  official updater binary to determine which payloads it sends and in what
+  order. If this resolves the `FS.bin` question, E1 may be skipped.
+- **E1 Update-session capture (write; only allowed write before M3).** On a
+  capture-capable host (Linux VM with USB passthrough, Windows + USBPcap, or
+  other Linux box), run the official v2.00 updater once, same version, with the
+  M1 manifest present. Zoom documents failed *updates* as retryable, but this
+  update does not restore the filesystem unless E1 proves it writes `FS.bin`.
+  Capture full traffic; analyze opcode sequence, payload transfer addresses,
+  update-mode descriptors/identity, and read opcodes.
+  *Decision rule:* if the updater transfers `FS.bin` -> record in
+  `docs/recovery.md` that official reflash restores factory FS (upgrades step 1
+  of recovery) and that updates wipe user patches; if not -> backups are
+  load-bearing and restore is only via our tools or chip-off.
+- **E2 Flasher-host decision.** Check whether the official macOS app launches
+  and enumerates the pedal; check Windows VM/Wine USB-MIDI passthrough with a
+  smoke test. *Decision rule:* macOS app works -> primary flasher; else
+  Windows/Wine works -> secondary; else build a native flasher from E1 captures
+  (kept as fallback in all cases). Record in `docs/toolchain.md`.
+- **E3 Read-path probe.** Only opcodes evidenced by E1/E1-alt. *Decision rule:*
+  if no read opcode is evidenced, no probe is attempted; P3 primary path is
+  chip-off.
+- **E4 Audio routing matrix (no writes).** Measure: physical input -> USB
+  record (expected FX path), USB playback -> record (loopback?), sample rates,
+  channel mapping, latency. *Decision rule:* if physical-in -> USB-record
+  carries the effect chain (confirmed by bypass-vs-effect differential) ->
+  automated FFT fixture; elif only playback loopback works -> capture the
+  pedal's analog output through an external USB audio interface with manual
+  routing; else -> manual listening test, M4a audible check is
+  operator-verified with recorded audio kept as evidence.
+- **E5 Zero-change repack round-trip.** Host-side: repack extracted bins,
+  assert byte-identical to original updater. *Decision rule:* mismatch -> fix
+  the container parser before P5a.
+- **E6 Mode detection.** Record identity/descriptors in normal vs update mode.
+  *Decision rule:* if modes present distinct detectable identity/descriptors ->
+  `zoomctl mode` auto-detects; else `zoomctl` requires an explicit `--mode`
+  flag and refuses ambiguous operations.
+
+Exit criteria: decision table complete; every [U] claim that gates a milestone
+is either verified or has a scheduled experiment with a decision rule.
+Deliverable: **M2**.
+
+**P3 — Ground truth.**
 Primary: chip-off dump of the MX25L3233F (desolder, CH341A at 3.3V, flashrom on
 Linux; read, hash, re-read verify). Alternative only if E1/E3 proved a read
 opcode: update-mode read via `zoomctl`. Reconcile the 4 MB image against P0 bins
-and document the memory map in `flash/README.md`. Tested restore path required:
-rehearse dump -> erase -> write -> boot on a donor unit or board if available;
-without a donor, the minimum is a full write + readback verification on the
-target chip plus the documented recovery escalation in `docs/recovery.md`.
-Deliverable: **M2 — write gate opens here.**
+and document the memory map in `flash/README.md`. Restore path verified at the
+level recorded in `docs/recovery.md`: full write + readback verification on the
+target chip, or dump -> erase -> write -> boot if a donor unit is available.
+Deliverable: **M3 — write gate opens here.**
 
-**P3a — Install-path validation and stock-module effect.**
-First FS write is a no-op: write identical bytes to an existing user file,
-read back, CRC match, power-cycle. Then determine the allowed install path for
-custom effects without category-ID changes (backup first, one mutation per
-test). Then modify a stock ZD2 module (parameter/coefficient) and make it
-audibly different over the E4 audio fixture. Deliverable: **M3a**.
+**P4a — Install-path validation and stock-module effect.**
+The first zoomctl-initiated FS write is a no-op: write identical bytes to an
+existing user file, read back, CRC match, power-cycle. (If E1 already performed
+an official filesystem write, that is separately recorded in the decision
+table.) Then determine the allowed install path for custom effects without
+category-ID changes (backup first, one mutation per test). Then modify a stock
+ZD2 module (parameter/coefficient) and make it audibly different over the E4
+fixture. Deliverable: **M4a**.
 
-**P3b — Self-compiled effect.**
+**P4b — Self-compiled effect.**
 Pin the TI C6000 CGT release and x86_64 build container in
 `docs/toolchain.md` (license notes included; redistribution only if permitted).
 Prove toolchain with a minimal C674x ELF (`readelf`: `EM_TI_C6000`, expected
@@ -166,31 +187,38 @@ sections/addresses). Reverse the ZD2 runtime ABI (entry points, per-instance
 state, audio buffers, loader symbols) and document in `effects/zd2/ABI.md`.
 Build `zd2wrap` with unit tests (wrapping an unwrapped stock module must
 reproduce the original bytes). First effect: fixed gain or notch with a known
-transfer function. Deliverable: **M3b**.
+transfer function. Deliverable: **M4b**.
 
-**P4a — Zero-change repack flash.**
+**P5a — Zero-change repack flash.**
 Flash a repacked updater with byte-identical payloads using the E2 environment;
 it must boot. Proves container regeneration and the flashing host end-to-end.
-Deliverable: **M4a**.
+Deliverable: **M5a**.
 
-**P4b — Minimal patch.**
+**P5b — Minimal patch.**
 Patch only the version/identity string; flash; success = boots and identity
 SysEx reports the new string. If the update is rejected, stop and reverse
 `MAIN_INFO.bin` (role hypothesis: integrity data) before any further patching.
-Deeper Main.bin experiments are a separate future spec. Deliverable: **M4b**.
+Deeper Main.bin experiments are a separate future spec. Deliverable: **M5b**.
 
-**P5 — Assessment.**
+**P6 — Assessment.**
 Boot-chain unknowns, effort estimate, licensing/clean-room notes, go/no-go for
-a clean-room firmware. Deliverable: **M5**.
+a clean-room firmware. Deliverable: **M6**.
 
 ## Safety and error handling
 
-- No device writes before M2. Sole exception: E1 official same-version reflash.
-- Write gate: `zoomctl --write` requires a manifest whose **live state digest**
-  matches the device at write time. Digest = identity + firmware version + FS
-  listing with per-file `~CRC` + patch CRCs. Computed live; mismatch = refuse.
-  This is honest *accident prevention*, not security — a determined operator can
-  bypass it.
+- No device writes before M3, except E1 (allowed only after M1, M1 manifest
+  present, decision rule recorded).
+- Writes fall in two classes with different enforcement:
+  - **zoomctl-mediated FS/file writes:** technically gated. `zoomctl --write`
+    requires a manifest whose live state digest matches the device at write
+    time. Digest = identity + firmware version + FS listing with per-file
+    `~CRC` + patch CRCs. Computed live; mismatch = refuse.
+  - **Flashing operations (E1, P5a, P5b) via vendor/repacked updater or native
+    flasher:** procedurally gated. A preflight checklist in `docs/recovery.md`
+    (manifest present, dump present where required, host decided, rollback
+    understood) must be filled and committed before each flash. This cannot be
+    technically enforced on vendor binaries; it is honest accident prevention,
+    not security.
 - Banned by default: category-ID changes (documented FS corruption), full-FS
   rewrites, blind opcode scanning in update mode, clip-programming an
   in-circuit flash, any operation while the USB link shows errors (defined as:
@@ -201,49 +229,51 @@ a clean-room firmware. Deliverable: **M5**.
   against a stock ZD2 module read before any write depends on it.
 - `firmware/official/` is immutable. Every repack carries a byte-diff report
   showing only intended changes.
-- `docs/recovery.md` must be actionable (exact pin, voltage, host, preconditions)
-  and its rehearsal record filled before M2 is declared complete.
+- `docs/recovery.md` must be actionable (exact pin, voltage, host,
+  preconditions) and its rehearsal record filled before M3 is declared
+  complete.
 
 ## Testing and verification
 
 - **P0:** golden tests (sizes, magics, known strings), parser round-trip,
   Mac/Windows payload equality, mismatch abort policy.
-- **P0.5:** E1 capture analysis; E4 routing matrix; E5 byte-identical repack;
-  decision table reviewed.
-- **P1a:** re-read random FS files and compare CRCs; manifest schema validation;
+- **P1:** re-read random FS files and compare CRCs; manifest schema validation;
   transfer-time measurement.
-- **P3a:** no-op write verification; then audible test via E4 fixture.
-- **P3b:** static ELF checks; `zd2wrap` round-trip tests; audio-in-the-loop with
-  defined tone, fixture effect, and tolerances.
-- **P4a:** boots with byte-identical payloads.
-- **P4b:** boots and identity reports patched version string.
+- **P2:** E1-alt/E1 analysis; E4 routing matrix; E5 byte-identical repack;
+  decision table reviewed.
+- **P4a:** no-op write verification; then audible test via E4 fixture.
+- **P4b:** static ELF checks; `zd2wrap` round-trip tests; audio-in-the-loop
+  with defined tone, fixture effect, and tolerances.
+- **P5a:** boots with byte-identical payloads.
+- **P5b:** boots and identity reports patched version string.
 
 ## Milestones
 
 | Milestone | Meaning |
 |---|---|
 | M0 | canonical bins + SHA256SUMS committed |
-| M0.5 | decision table recorded (E1–E6) |
-| M1 | read-only backup verified |
-| M2 | full-chip dump + memory map + tested restore path; write gate opens |
-| M3a | modified stock effect audible |
-| M3b | self-compiled effect audible |
-| M4a | zero-change repack boots |
-| M4b | string-patched Main.bin boots |
-| M5 | clean-room go/no-go report |
+| M1 | read-only backup verified (required before any write, including E1) |
+| M2 | decision table recorded (E1-alt/E1–E6) |
+| M3 | full-chip dump + memory map + restore path verified at the level recorded in recovery.md; write gate opens |
+| M4a | modified stock effect audible |
+| M4b | self-compiled effect audible |
+| M5a | zero-change repack boots |
+| M5b | string-patched Main.bin boots |
+| M6 | clean-room go/no-go report |
 
 ## Risks and mitigations
 
 | Risk | Mitigation |
 |---|---|
-| Bricking the unit before any backup exists | all writes gated until M2; E1 is the only pre-M2 write and is the vendor recovery step |
-| Recovery path is fiction until rehearsed | rehearsal record in `docs/recovery.md` required for M2; donor unit/board purchase recommended |
-| [U] community claims on the critical path | P0.5 experiments with decision rules; nothing gates a milestone on an unverified claim |
-| macOS/ARM tooling friction (updaters, flashrom, x86 colima, CGT) | E2 host decision; native flasher fallback; pinned container |
+| Bricking the unit before any backup exists | M1 backup completes before any write; E1 is the first write and is vendor-sanctioned |
+| E1 itself may wipe the filesystem | E1 runs only after M1; E1 decision rule records the FS consequence; user patches exist in backups |
+| Recovery path is fiction until rehearsed | rehearsal record in `docs/recovery.md` required for M3; donor unit/board purchase recommended |
+| [U] community claims on the critical path | P2 experiments with decision rules; nothing gates a milestone on an unverified claim |
+| macOS/ARM tooling friction (updaters, flashrom, x86 colima, CGT) | E2 host decision with native-flasher fallback; pinned container |
 | TI CGT license/redistribution | pinned release, license notes in `docs/toolchain.md`; container redistributed only if permitted |
 | FS corruption from writes | backups + live digest gate + no-op first write + one mutation per test |
 | Update-mode read rumor false | hardware chip-off is the primary path; read probe is capture-driven only |
-| MAIN_INFO.bin integrity check blocks Main patches | P4b decision rule: reverse MAIN_INFO first if rejected |
+| MAIN_INFO.bin integrity check blocks Main patches | P5b decision rule: reverse MAIN_INFO first if rejected |
 
 ## Tooling and environment
 
@@ -254,16 +284,17 @@ a clean-room firmware. Deliverable: **M5**.
 - Shopping list: CH341A (3.3V-safe) + SOIC-8 adapter and hot-air/desoldering
   capability; donor G1 Four or main board (recommended for restore rehearsal);
   audio loop adapters; TI myTI account for CGT.
-- Estimated effort (solo): P0+P1a ~ days; P0.5 ~ days; P2 ~ a weekend plus
-  parts shipping; P3a ~ days; P3b ~ weeks; P4 ~ weeks; P5 ~ days.
+- Estimated effort (solo): P0+P1 ~ days; P2 ~ days; P3 ~ a weekend plus parts
+  shipping; P4a ~ days; P4b ~ weeks; P5 ~ weeks; P6 ~ days.
 
 ## Open questions
 
 Each resolves through a named experiment or is explicitly out of scope.
 
-1. Does the updater write `FS.bin`? -> E1.
-2. Update-mode read opcode? -> E1, E3; if absent, hardware dump (P2 primary).
-3. Role of `MAIN_INFO.bin` / integrity checks -> P4b decision rule.
-4. ZD2 runtime ABI -> P3b (`ABI.md`).
-5. USB audio routing usable for tests -> E4.
+1. Does the updater write `FS.bin`? -> E1-alt, E1; decision rule recorded.
+2. Update-mode read opcode? -> E1, E3; if absent, hardware dump (P3 primary).
+3. Role of `MAIN_INFO.bin` / integrity checks -> P5b decision rule.
+4. ZD2 runtime ABI -> P4b (`ABI.md`).
+5. USB audio routing usable for tests -> E4; falls back to physical capture or
+   manual listening per decision rule.
 6. C6745 JTAG pinout -> escape hatch, not planned.

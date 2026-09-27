@@ -9,9 +9,11 @@ correct voltage, and a tested restore procedure.
 ### 1. Official re-flash retry (software, sanctioned)
 
 Enter update mode (hold both footswitches while plugging USB; screen shows
-FIRMWARE UPDATE) and run the pristine official updater. Documented as
-retryable. Does not restore the filesystem; if the filesystem itself is
-corrupt, continue to step 2.
+FIRMWARE UPDATE) and run the pristine official updater. Zoom documents failed
+updates as retryable. Whether this restores the filesystem depends on whether
+the updater sends `FS.bin` to flash — to be proven in the E1 experiment; until
+then assume it does not. If the filesystem itself is corrupt, continue to
+step 2.
 
 ### 2. Filesystem rebuild via SPI pin short (hardware, community-reported [U])
 
@@ -47,6 +49,23 @@ performed.
 - No `Main.bin` flashing until M2 (dump + memory map + rehearsal record).
 - Record every operation (tool, command, hashes, observed result) in
   `backups/manifests/`; recovery depends on knowing exactly what changed.
+
+## Flashing preflight checklist
+
+Fill and commit this checklist before every flash operation (E1, P5a, P5b).
+This is procedural — vendor binaries cannot be technically gated.
+
+- Manifest with matching live state digest exists (`backups/manifests/`).
+- For P5a/P5b: M3 dump present in `flash/` with matching hashes.
+- Flasher host decided and verified per E2 (`docs/toolchain.md`).
+- Exact updater file recorded (path + SHA256), pristine original preserved.
+- Rollback path understood: `recovery.md` escalation 1-3, with the expected
+  outcome for this specific operation written down.
+- Operator present for the whole operation; no other MIDI/USB traffic on the
+  pedal's port; power stable.
+
+Operation log (append one entry per flash: date, operation, files+hashes,
+result, follow-up):
 
 ## Rehearsal record
 
