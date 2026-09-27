@@ -952,3 +952,15 @@ git commit -m "docs: P0 recon results, artifact hashes, README status"
 - Spec coverage: P0 requires fetch+hash verify, all five bins, cross-platform byte equality, mismatch abort + diff report, SHA256SUMS, golden tests, and FS.bin as P1 oracle. Tasks 1–8 cover all of these. Container parser/repack round-trip is E5 (spec P2/P5a), intentionally out of scope here.
 - No placeholders: every step contains runnable code or exact commands.
 - Type consistency: `sha256_file`, `download`, `extract_zip`, `find_mac_resources`, `find_sevenzip`, `extract_win_resources`, `fetch_all`, `canonicalize`, `write_sha256sums`, `extract_all`, `verify_all` are used with identical signatures across tasks and tests.
+
+---
+
+## Post-implementation follow-ups (recorded 2026-09-27)
+
+- Integration test re-downloads ~9 MB each run; consider honoring an env var
+  pointing at `firmware/official` to reuse already-verified packages.
+- CLI could wrap known failures (HTTP errors, 7z errors, missing artifacts)
+  into concise stderr messages instead of raw tracebacks.
+- Spec was aligned after implementation to reflect the hash-only artifact
+  policy (bins gitignored) and the reality that no custom container parser is
+  needed for extraction.
