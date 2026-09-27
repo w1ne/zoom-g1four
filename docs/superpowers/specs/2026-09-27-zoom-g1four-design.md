@@ -176,8 +176,8 @@ existing user file, read back, CRC match, power-cycle. (If E1 already performed
 an official filesystem write, that is separately recorded in the decision
 table.) Then determine the allowed install path for custom effects without
 category-ID changes (backup first, one mutation per test). Then modify a stock
-ZD2 module (parameter/coefficient) and make it audibly different over the E4
-fixture. Deliverable: **M4a**.
+ZD2 module (parameter/coefficient) and make it audibly different via the
+E4-determined method. Deliverable: **M4a**.
 
 **P4b — Self-compiled effect.**
 Pin the TI C6000 CGT release and x86_64 build container in
@@ -241,9 +241,11 @@ a clean-room firmware. Deliverable: **M6**.
   transfer-time measurement.
 - **P2:** E1-alt/E1 analysis; E4 routing matrix; E5 byte-identical repack;
   decision table reviewed.
-- **P4a:** no-op write verification; then audible test via E4 fixture.
-- **P4b:** static ELF checks; `zd2wrap` round-trip tests; audio-in-the-loop
-  with defined tone, fixture effect, and tolerances.
+- **P4a:** no-op write verification; then audible test via the E4-determined
+  method (automated fixture, external capture, or operator-verified listening).
+- **P4b:** static ELF checks; `zd2wrap` round-trip tests; audio-in-the-loop with
+  defined tone, fixture effect, and tolerances, or the E4 fallback method with
+  recorded audio as evidence.
 - **P5a:** boots with byte-identical payloads.
 - **P5b:** boots and identity reports patched version string.
 

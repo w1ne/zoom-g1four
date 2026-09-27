@@ -28,7 +28,7 @@ Read `docs/superpowers/specs/2026-09-27-zoom-g1four-design.md` for the design an
 | P0 | Extract official v2.00 updater into canonical bins | M0 | not started |
 | P1 | Read-only patch/FS backup (required before any write) | M1 | not started |
 | P2 | Capture USB sessions, decide open questions (E1-alt/E1–E6) | M2 | not started |
-| P3 | 4 MB flash dump, memory map, tested restore (opens write gate) | M3 | not started |
+| P3 | 4 MB flash dump, memory map, restore verified to the level recorded in recovery.md (opens write gate) | M3 | not started |
 | P4a | No-op write, install path, modified stock effect audible | M4a | not started |
 | P4b | Self-compiled C674x effect audible | M4b | not started |
 | P5a | Zero-change repacked updater boots | M5a | not started |

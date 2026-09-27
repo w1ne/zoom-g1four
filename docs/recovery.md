@@ -1,6 +1,6 @@
 # Recovery playbook (gate artifact)
 
-Status: draft. Not valid as the M2 gate artifact until the rehearsal record
+Status: draft. Not valid as the M3 gate artifact until the rehearsal record
 below is filled. Requires: exact pin confirmed against the original source,
 correct voltage, and a tested restore procedure.
 
@@ -34,19 +34,19 @@ ESD care. Success indicator: normal boot with rebuilt filesystem.
 1. Desolder the MX25L3233F with hot air. Do not attempt to program it in
    circuit with a clip: the C6745 drives the same bus (contention), and clips
    are unreliable.
-2. Write the P2 dump with a CH341A set to 3.3V (verify the adapter/jumper
+2. Write the P3 dump with a CH341A set to 3.3V (verify the adapter/jumper
    before connecting) using flashrom on Linux.
 3. Read back and verify the hash against the dump.
 4. Reassemble and power on. Success = normal boot.
 
-Requires: verified P2 dump (`flash/`), and that the P2 restore rehearsal was
+Requires: verified P3 dump (`flash/`), and that the P3 restore rehearsal was
 performed.
 
 ## Rules
 
 - `firmware/official/` downloads are never edited.
 - No FS write until a manifest with matching live state digest exists.
-- No `Main.bin` flashing until M2 (dump + memory map + rehearsal record).
+- No `Main.bin` flashing until M3 (dump + memory map + rehearsal record).
 - Record every operation (tool, command, hashes, observed result) in
   `backups/manifests/`; recovery depends on knowing exactly what changed.
 
@@ -69,6 +69,6 @@ result, follow-up):
 
 ## Rehearsal record
 
-Not yet performed. Required before M2 is declared complete. Minimum without a
+Not yet performed. Required before M3 is declared complete. Minimum without a
 donor unit: full write + readback verification on the target chip. Full
 rehearsal (dump -> erase -> write -> boot) requires a donor unit or board.
