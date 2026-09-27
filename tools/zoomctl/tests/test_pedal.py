@@ -104,8 +104,9 @@ def test_patch_download_bank_and_location_math():
     transport = FakeTransport([sysex(packet)])
     pedal = ZoomPedal(transport)
 
-    pedal.patch_download(location=23, bsize=10)
+    result = pedal.patch_download(location=23, bsize=10)
 
+    assert result == b""
     assert list(transport.sent[0].data) == [0x52, 0x00, 0x6E, 0x46, 0x00, 0x00, 2, 0, 2, 0]
 
 
@@ -118,4 +119,39 @@ def test_patch_download_raises_on_bad_crc():
     pedal = ZoomPedal(transport)
 
     with pytest.raises(PedalError, match="checksum"):
+        pedal.patch_download(location=1, bsize=10)
+
+
+def test_patch_check_decodes_14bit_values():
+    reply = sysex([0x52, 0x00, 0x6E, 0x44, 44, 2, 0x48, 1, 0, 0, 100, 0])
+    pedal = ZoomPedal(FakeTransport([reply]))
+
+    assert pedal.patch_check() == (300, 200, 100)
+
+
+def test_patch_check_truncated_reply_raises():
+    pedal = ZoomPedal(FakeTransport([sysex([0x52, 0x00, 0x6E, 0x44, 1, 0])]))
+
+    with pytest.raises(PedalError, match="truncated patch info reply"):
+        pedal.patch_check()
+
+
+def test_patch_download_handles_200_byte_patch():
+    data = bytes((i * 7) % 256 for i in range(200))
+    packet = [0x52, 0x00, 0x6E, 0x60, 0x04, 0, 0, 0, 0, 0]
+    packet += [len(data) & 0x7F, (len(data) >> 7) & 0x7F]
+    packet += list(pack_7bit(data)) + list(crc32_5(data))
+    pedal = ZoomPedal(FakeTransport([sysex(packet)]))
+
+    assert pedal.patch_download(location=1, bsize=10) == data
+
+
+def test_patch_download_truncated_reply_raises():
+    data = b"0123456789abcdef"
+    packet = [0x52, 0x00, 0x6E, 0x60, 0x04, 0, 0, 0, 0, 0]
+    packet += [len(data) & 0x7F, (len(data) >> 7) & 0x7F]
+    packet += list(pack_7bit(data))[:3]
+    pedal = ZoomPedal(FakeTransport([sysex(packet)]))
+
+    with pytest.raises(PedalError, match="truncated patch reply"):
         pedal.patch_download(location=1, bsize=10)
