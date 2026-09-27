@@ -155,3 +155,13 @@ left to P5a.
 - **No mismatch** in the zero-change round-trip (EXE out SHA == in SHA; Mac payloads
   byte-identical to the originals) and the one-byte edit landed exactly at resource 129 —
   decision rule outcome: **container regeneration verified**; no issue found before P5a.
+
+### Windows/Mac signing note for P5a
+
+Windows signing note for P5a: byte patching invalidates the EXE's Authenticode
+signature and leaves the PE checksum stale. Windows ignores the checksum for
+user-mode EXEs, but expect SmartScreen/UAC "Unknown publisher" friction when
+running a repacked updater. Options if it blocks: recompute the checksum with
+`pefile.generate_checksum()` or run the flash from a Windows host/VM with
+SmartScreen bypass. Mac side: repack uses ad-hoc signing plus
+`codesign --verify --strict`.
