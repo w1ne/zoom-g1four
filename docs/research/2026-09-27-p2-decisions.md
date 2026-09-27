@@ -190,3 +190,23 @@ future `zoomctl mode` must compare against the expected application version
 
 Note: `system_profiler SPUSBDataType` does not list USB devices in this
 environment; `ioreg -p IOUSB -l` was used for descriptors.
+
+## E1 — not yet executed (paused 2026-09-27)
+
+Status: paused by the operator before clicking Execute. Preflight is filled and
+committed (`docs/recovery.md`, "E1 preflight"), the updater app launches under
+Rosetta (E2), and the side-capture logger is proven working: while the updater
+was merely open, `.work/p2/e1/session.log` captured the app's own identity
+exchange (`7E 00 06 02 52 6E 00 0C 00 32 2E 30 30`, firmware 2.00).
+
+Resume steps:
+1. Enter update mode: unplug, hold both footswitches, plug in, release on
+   FIRMWARE UPDATE.
+2. Start capture:
+   `.venv/bin/python -m tools.capture.midi_log --out .work/p2/e1/session.log`
+3. Open the updater app, Rescan if needed, click Execute, wait for Complete!.
+4. Stop the logger; unplug/replug; verify `zoomctl identity` still reports
+   G1 Four / 2.00.
+5. Analyze the captured log with the E1-alt report; fill the E1 row and the
+   FS.bin conclusion; append the operation-log entry in `docs/recovery.md`;
+   commit.
