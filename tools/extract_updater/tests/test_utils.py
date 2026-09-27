@@ -56,3 +56,41 @@ def test_extract_zip_extracts_nested_tree(tmp_path):
     out = extract_zip(good, tmp_path / "out")
 
     assert (out / "dir" / "file.bin").read_bytes() == b"data"
+
+
+def test_extract_zip_rejects_absolute_path(tmp_path):
+    import zipfile
+
+    absolute = tmp_path / "absolute.zip"
+    with zipfile.ZipFile(absolute, "w") as zf:
+        zf.writestr("/etc/passwd", "boom")
+
+    with pytest.raises(ValueError, match="unsafe path"):
+        extract_zip(absolute, tmp_path / "out")
+
+
+def test_extract_zip_writes_symlink_entry_as_regular_file(tmp_path):
+    import stat
+    import zipfile
+
+    link_zip = tmp_path / "symlink.zip"
+    info = zipfile.ZipInfo("link")
+    info.external_attr = (stat.S_IFLNK | 0o777) << 16
+    with zipfile.ZipFile(link_zip, "w") as zf:
+        zf.writestr(info, "../../outside")
+
+    out = extract_zip(link_zip, tmp_path / "out")
+
+    link = out / "link"
+    assert not link.is_symlink()
+    assert link.read_bytes() == b"../../outside"
+
+
+def test_download_failure_leaves_no_residue(tmp_path):
+    import urllib.error
+
+    dest_dir = tmp_path / "downloads"
+    with pytest.raises(urllib.error.URLError):
+        download((tmp_path / "missing.bin").as_uri(), dest_dir / "x.bin", "0" * 64)
+
+    assert list(dest_dir.iterdir()) == []
