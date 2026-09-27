@@ -19,6 +19,8 @@ MODELS = {
     (0x23, 0x00): "MS-50G+",
 }
 
+FILE_SIZE_CAP = 64 * 1024 * 1024
+
 
 class PedalError(RuntimeError):
     pass
@@ -113,11 +115,13 @@ class ZoomPedal:
         if len(data) > 4 and data[4] == 4:
             for end in range(14, min(27, len(data))):
                 if data[end] == 0:
-                    return bytes(data[14:end]).decode("utf-8")
+                    return bytes(data[14:end]).decode("ascii")
+            raise PedalError(f"unterminated file name in listing reply: {data}")
         return ""
 
     def file_download(self, name: str) -> bytes:
         header = [0x52, 0x00, 0x6E, 0x60, 0x20, 0x02] + [0x00] * 9
+        self._filename_request(header, name)
         self._filename_request(header, name)
         collected = bytearray()
         while True:
@@ -126,7 +130,7 @@ class ZoomPedal:
             reply = self._request([0x52, 0x00, 0x6E, 0x60, 0x05, 0x00])
             packet = list(reply.data)
             if len(packet) < 10:
-                raise PedalError(f"truncated file reply for {name}: {len(packet)} bytes")
+                raise PedalError(f"truncated file reply for {name}: {len(packet)} < 10")
             length = packet[9] * 128 + packet[8]
             if packet[4] != 4 or length == 0:
                 break
@@ -140,6 +144,8 @@ class ZoomPedal:
             if (checksum ^ 0xFFFFFFFF) != binascii.crc32(block):
                 raise PedalError(f"checksum mismatch for file {name}")
             collected += block
+            if len(collected) > FILE_SIZE_CAP:
+                raise PedalError(f"file {name} exceeds size cap of {FILE_SIZE_CAP} bytes")
         return bytes(collected)
 
     def file_close(self) -> None:
