@@ -1,3 +1,4 @@
+import hashlib
 from pathlib import Path
 
 import pytest
@@ -103,3 +104,77 @@ def test_fetch_all_reuses_local_file_with_matching_hash(tmp_path, monkeypatch):
     result = pipeline.fetch_all(official)
 
     assert set(result) == {"mac", "win"}
+
+
+def _one_payload(tmp_path, data=b"data", name="X.bin"):
+    path = tmp_path / name
+    path.write_bytes(data)
+    return {name: {"size": len(data), "sha256": hashlib.sha256(data).hexdigest()}}, path
+
+
+def test_verify_all_passes_with_matching_artifacts(tmp_path, monkeypatch):
+    payloads, path = _one_payload(tmp_path)
+    monkeypatch.setattr(pipeline.constants, "PAYLOADS", payloads)
+    pipeline.write_sha256sums({name: path for name in payloads}, tmp_path / "SHA256SUMS")
+
+    assert pipeline.verify_all(tmp_path) is None
+
+
+def test_verify_all_rejects_missing_file(tmp_path, monkeypatch):
+    payloads, path = _one_payload(tmp_path)
+    monkeypatch.setattr(pipeline.constants, "PAYLOADS", payloads)
+    pipeline.write_sha256sums({name: path for name in payloads}, tmp_path / "SHA256SUMS")
+    path.unlink()
+
+    with pytest.raises(FileNotFoundError, match="missing"):
+        pipeline.verify_all(tmp_path)
+
+
+def test_verify_all_rejects_wrong_size(tmp_path, monkeypatch):
+    payloads, path = _one_payload(tmp_path)
+    payloads["X.bin"]["size"] = 99
+    monkeypatch.setattr(pipeline.constants, "PAYLOADS", payloads)
+    pipeline.write_sha256sums({name: path for name in payloads}, tmp_path / "SHA256SUMS")
+
+    with pytest.raises(ValueError, match="expected size 99"):
+        pipeline.verify_all(tmp_path)
+
+
+def test_verify_all_rejects_wrong_hash(tmp_path, monkeypatch):
+    payloads, path = _one_payload(tmp_path)
+    payloads["X.bin"]["sha256"] = "0" * 64
+    monkeypatch.setattr(pipeline.constants, "PAYLOADS", payloads)
+    pipeline.write_sha256sums({name: path for name in payloads}, tmp_path / "SHA256SUMS")
+
+    with pytest.raises(ValueError, match="expected sha256"):
+        pipeline.verify_all(tmp_path)
+
+
+def test_verify_all_rejects_sha256sums_mismatch(tmp_path, monkeypatch):
+    payloads, path = _one_payload(tmp_path)
+    monkeypatch.setattr(pipeline.constants, "PAYLOADS", payloads)
+    (tmp_path / "SHA256SUMS").write_text("f" * 64 + "  X.bin\n")
+
+    with pytest.raises(ValueError, match="SHA256SUMS does not match constants"):
+        pipeline.verify_all(tmp_path)
+
+
+def test_extract_all_rejects_incomplete_payload_set(tmp_path, monkeypatch):
+    mac_bin = tmp_path / "mac.bin"
+    mac_bin.write_bytes(b"same")
+    win_bin = tmp_path / "win.bin"
+    win_bin.write_bytes(b"same")
+
+    def fake_extract_zip(pkg, dest):
+        dest.mkdir(parents=True, exist_ok=True)
+        if dest.name == "win":
+            (dest / "updater.exe").write_bytes(b"MZ")
+        return dest
+
+    monkeypatch.setattr(pipeline, "fetch_all", lambda official: {"mac": mac_bin, "win": win_bin})
+    monkeypatch.setattr(pipeline, "extract_zip", fake_extract_zip)
+    monkeypatch.setattr(pipeline, "find_mac_resources", lambda root: {"X.bin": mac_bin})
+    monkeypatch.setattr(pipeline, "extract_win_resources", lambda exe, dest, **kw: {"X.bin": win_bin})
+
+    with pytest.raises(ValueError, match="payload set incomplete"):
+        pipeline.extract_all(tmp_path / "official", tmp_path / "extracted", tmp_path / "work")
