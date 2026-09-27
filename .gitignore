@@ -1,0 +1,17 @@
+# Binaries and dumps are not versioned; hashes and manifests are.
+*.bin
+*.zip
+*.dmg
+*.exe
+
+firmware/official/*
+firmware/extracted/*
+firmware/repacked/*
+flash/*
+backups/*
+!**/.gitkeep
+
+.venv/
+__pycache__/
+*.pyc
+.DS_Store
