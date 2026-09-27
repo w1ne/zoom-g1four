@@ -50,3 +50,6 @@ WIN_BIN_RESOURCE_IDS = {
 }
 
 SEVENZIP_CANDIDATES = ("7zz", "7z")
+
+# Resource directory layout produced by `7zz x` for the Windows updater EXE.
+WIN_RESOURCE_BIN_DIR_PARTS = (".rsrc", "1041", "BIN")

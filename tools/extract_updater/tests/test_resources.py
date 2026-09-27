@@ -39,10 +39,11 @@ def test_extract_win_resources_maps_ids_to_names(tmp_path, monkeypatch):
     exe.write_bytes(b"MZ")
     dest = tmp_path / "out"
 
-    def fake_run(cmd, check, stdout, stderr):
+    def fake_run(cmd, capture_output, text):
+        assert cmd == ["7zz", "x", f"-o{dest}", "-y", str(exe)]
         out_dir = Path(cmd[2][2:])
         for rid in constants.WIN_BIN_RESOURCE_IDS:
-            target = out_dir / ".rsrc" / "1041" / "BIN" / str(rid)
+            target = out_dir.joinpath(*constants.WIN_RESOURCE_BIN_DIR_PARTS, str(rid))
             target.parent.mkdir(parents=True, exist_ok=True)
             target.write_bytes(f"resource-{rid}".encode())
         return subprocess.CompletedProcess(cmd, 0)
@@ -59,10 +60,23 @@ def test_extract_win_resources_reports_missing_resource(tmp_path, monkeypatch):
     exe = tmp_path / "updater.exe"
     exe.write_bytes(b"MZ")
 
-    def fake_run(cmd, check, stdout, stderr):
+    def fake_run(cmd, capture_output, text):
         return subprocess.CompletedProcess(cmd, 0)
 
     monkeypatch.setattr(resources.subprocess, "run", fake_run)
 
     with pytest.raises(FileNotFoundError, match="resource 129"):
+        resources.extract_win_resources(exe, tmp_path / "out", sevenzip="7zz")
+
+
+def test_extract_win_resources_surfaces_sevenzip_stderr(tmp_path, monkeypatch):
+    exe = tmp_path / "updater.exe"
+    exe.write_bytes(b"MZ")
+
+    def fake_run(cmd, capture_output, text):
+        return subprocess.CompletedProcess(cmd, 2, stdout="", stderr="not an archive")
+
+    monkeypatch.setattr(resources.subprocess, "run", fake_run)
+
+    with pytest.raises(RuntimeError, match="not an archive"):
         resources.extract_win_resources(exe, tmp_path / "out", sevenzip="7zz")
