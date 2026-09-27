@@ -12,6 +12,7 @@ backups/*
 !**/.gitkeep
 
 .venv/
+.work/
 __pycache__/
 *.pyc
 .DS_Store

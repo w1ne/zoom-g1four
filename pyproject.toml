@@ -1,0 +1,13 @@
+[project]
+name = "zoom-g1four"
+version = "0.1.0"
+description = "Reverse engineering and open-firmware effort for the Zoom G1 Four"
+requires-python = ">=3.11"
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tools"]
+addopts = "-m 'not integration'"
+markers = [
+    "integration: end-to-end tests that download vendor packages (run with -m integration)",
+]
